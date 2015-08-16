@@ -5,10 +5,8 @@ import static com.asoroka.trippi.impl.sparqlupdate.SparqlUpdateSession.Operation
 import static com.asoroka.trippi.impl.sparqlupdate.SparqlUpdateSession.Operation.INSERT;
 import static com.asoroka.trippi.impl.sparqlupdate.SparqlUpdateSessionFactory.LANGUAGES;
 import static com.asoroka.trippi.impl.sparqlupdate.converters.TripleConverter.tripleConverter;
-import static java.util.stream.Collectors.toSet;
-import static org.apache.jena.graph.Factory.createGraphMem;
-import static org.apache.jena.riot.RDFDataMgr.write;
-import static org.apache.jena.riot.RDFFormat.TURTLE_BLOCKS;
+import static org.apache.jena.ext.com.google.common.collect.FluentIterable.from;
+import static org.apache.jena.riot.writer.NTriplesWriter.write;
 import static org.apache.jena.update.UpdateFactory.create;
 
 import java.io.IOException;
@@ -16,7 +14,6 @@ import java.io.StringWriter;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.apache.jena.graph.Graph;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.update.UpdateRequest;
 import org.jrdf.graph.ObjectNode;
@@ -62,8 +59,8 @@ public class SparqlUpdateSession implements TriplestoreSession {
      * @param operation the type of mutating operation to perform
      */
     private void mutate(final Set<org.jrdf.graph.Triple> triples, final Operation operation) {
-        final Set<Triple> ts = triples.stream().map(tripleConverter::convert).collect(toSet());
-        final UpdateRequest request = create(operation + " { " + datablock(ts) + " } WHERE {}");
+        final Iterable<Triple> trips = from(triples).transform(tripleConverter::convert);
+        final UpdateRequest request = create(operation + " { " + datablock(trips) + " } WHERE {}");
         executor.accept(request);
     }
 
@@ -81,11 +78,9 @@ public class SparqlUpdateSession implements TriplestoreSession {
      * @param triples the RDF to serialize
      * @return a block of serialized RDF as described
      */
-    private static String datablock(final Set<Triple> triples) {
-        try (StringWriter w = new StringWriter()) {
-            final Graph g = createGraphMem();
-            triples.forEach(g::add);
-            write(w, g, TURTLE_BLOCKS);
+    private static String datablock(final Iterable<Triple> triples) {
+        try (final StringWriter w = new StringWriter()) {
+            write(w, triples.iterator());
             return w.toString();
         } catch (final IOException e) {
             throw new AssertionError();
