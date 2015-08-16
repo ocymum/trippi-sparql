@@ -8,6 +8,7 @@ import static java.net.URI.create;
 import static java.util.Arrays.asList;
 import static org.apache.jena.ext.com.google.common.collect.ImmutableMap.of;
 import static org.apache.jena.query.QueryExecutionFactory.sparqlService;
+import static org.apache.jena.rdf.model.ModelFactory.createDefaultModel;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -30,13 +31,13 @@ import org.trippi.TrippiException;
 
 import com.asoroka.trippi.impl.sparqlupdate.SparqlUpdateConnector;
 
-public class SimpleIT {
+public class NormalOperationIT {
 
     private static final String ALL_TRIPLES = "CONSTRUCT { ?s ?p ?o } WHERE {?s ?p ?o.}";
 
     private EmbeddedFusekiServer server;
 
-    private static final Logger log = getLogger(SimpleIT.class);
+    private static final Logger log = getLogger(NormalOperationIT.class);
 
     private static final String FUSEKI_PORT_PROPERTY = "fuseki.dynamic.test.port";
 
@@ -69,21 +70,21 @@ public class SimpleIT {
                 "info:predicate1")), createResource(create("info:object1"))), createTriple(createResource(create(
                         "info:subject2")), createResource(create("info:predicate2")), createResource(create(
                                 "info:object2"))));
+        final Model statements = createDefaultModel();
+        triples.stream().map(tripleConverter::convert).map(statements::asStatement).forEach(statements::add);
 
         // add them to our triplestore via our SPARQL Update connector
         sparqlUpdateConnector.getWriter().add(triples, true);
 
-        // check to see that they all arrived
+        // check that they were all added
         Model results = sparqlService(datasetUrl + "/query", ALL_TRIPLES).execConstruct();
-        assertTrue(triples.stream().map(tripleConverter::convert).map(results::asStatement).allMatch(
-                results::contains));
+        assertTrue(results.containsAll(statements));
 
         // now delete them from our triplestore via our SPARQL Update connector
         sparqlUpdateConnector.getWriter().delete(triples, true);
 
-        // check to see that they were all removed
+        // check that they were all removed
         results = sparqlService(datasetUrl + "/query", ALL_TRIPLES).execConstruct();
-        assertFalse(triples.stream().map(tripleConverter::convert).map(results::asStatement).anyMatch(
-                results::contains));
+        assertFalse(results.containsAny(statements));
     }
 }
