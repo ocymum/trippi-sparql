@@ -1,5 +1,5 @@
 
-package com.asoroka.trippi.impl.jena;
+package com.asoroka.trippi.impl.sparqlupdate;
 
 import static java.lang.Integer.parseInt;
 

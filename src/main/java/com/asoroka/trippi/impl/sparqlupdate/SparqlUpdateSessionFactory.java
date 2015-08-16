@@ -1,5 +1,5 @@
 
-package com.asoroka.trippi.impl.jena;
+package com.asoroka.trippi.impl.sparqlupdate;
 
 import static org.apache.jena.update.UpdateExecutionFactory.createRemote;
 import static org.apache.jena.update.UpdateFactory.create;

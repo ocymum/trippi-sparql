@@ -1,10 +1,17 @@
-package com.asoroka.trippi.impl.jena;
+
+package com.asoroka.trippi.impl.sparqlupdate;
 
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Node_URI;
 import org.jrdf.graph.PredicateNode;
 import org.jrdf.graph.URIReference;
 
+/**
+ * For use with RDF predicate nodes.
+ *
+ * @see NodeConverter
+ * @author A. Soroka
+ */
 public class PredicateConverter extends NodeConverter<PredicateNode, Node> {
 
     private final UriConverter uriConverter = new UriConverter();

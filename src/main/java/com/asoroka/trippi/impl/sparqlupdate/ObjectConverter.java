@@ -1,5 +1,5 @@
 
-package com.asoroka.trippi.impl.jena;
+package com.asoroka.trippi.impl.sparqlupdate;
 
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Node_Blank;
@@ -10,6 +10,12 @@ import org.jrdf.graph.Literal;
 import org.jrdf.graph.ObjectNode;
 import org.jrdf.graph.URIReference;
 
+/**
+ * For use with RDF object nodes.
+ *
+ * @see NodeConverter
+ * @author A. Soroka
+ */
 public class ObjectConverter extends NodeConverter<ObjectNode, Node> {
 
     private final UriConverter uriConverter = new UriConverter();

@@ -1,4 +1,5 @@
-package com.asoroka.trippi.impl.jena;
+
+package com.asoroka.trippi.impl.sparqlupdate;
 
 import static java.net.URI.create;
 import static org.apache.jena.graph.NodeFactory.createURI;
@@ -8,6 +9,10 @@ import org.apache.jena.graph.Node_URI;
 import org.jrdf.graph.GraphElementFactoryException;
 import org.jrdf.graph.URIReference;
 
+/**
+ * @see NodeConverter
+ * @author A. Soroka
+ */
 public class UriConverter extends NodeConverter<URIReference, Node_URI> {
 
     @Override

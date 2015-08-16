@@ -1,7 +1,9 @@
 
-package com.asoroka.trippi.impl.jena;
+package com.asoroka.trippi.impl.sparqlupdate;
 
-import static com.asoroka.trippi.impl.jena.SparqlUpdateSessionFactory.LANGUAGES;
+import static com.asoroka.trippi.impl.sparqlupdate.SparqlUpdateSession.Operation.DELETE;
+import static com.asoroka.trippi.impl.sparqlupdate.SparqlUpdateSession.Operation.INSERT;
+import static com.asoroka.trippi.impl.sparqlupdate.SparqlUpdateSessionFactory.LANGUAGES;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.jena.graph.Factory.createGraphMem;
 import static org.apache.jena.riot.RDFDataMgr.write;
@@ -21,6 +23,9 @@ import org.trippi.TripleIterator;
 import org.trippi.TupleIterator;
 import org.trippi.impl.base.TriplestoreSession;
 
+/**
+ * @author A. Soroka
+ */
 public class SparqlUpdateSession implements TriplestoreSession {
 
     private final Consumer<String> executor;
@@ -33,18 +38,29 @@ public class SparqlUpdateSession implements TriplestoreSession {
 
     @Override
     public void add(final Set<org.jrdf.graph.Triple> triples) {
-        mutate(triples, "INSERT");
+        mutate(triples, INSERT);
     }
 
     @Override
     public void delete(final Set<org.jrdf.graph.Triple> triples) {
-        mutate(triples, "DELETE");
+        mutate(triples, DELETE);
     }
 
-    private void mutate(final Set<org.jrdf.graph.Triple> triples, final String operation) {
+    /**
+     * Perform a mutating operation against the service encapsulated in
+     * {@link #executor}.
+     *
+     * @param triples the triples with which to perform the operation
+     * @param operation the type of mutating operation to perform
+     */
+    private void mutate(final Set<org.jrdf.graph.Triple> triples, final Operation operation) {
         final Set<Triple> ts = triples.stream().map(tripleConverter::convert).collect(toSet());
         final String query = operation + " { " + datablock(ts) + " } WHERE {}";
         executor.accept(query);
+    }
+
+    public static enum Operation {
+        INSERT, DELETE
     }
 
     private static String datablock(final Set<Triple> triples) {
