@@ -52,8 +52,7 @@ public class SparqlUpdateSession implements TriplestoreSession {
     }
 
     /**
-     * Perform a mutating operation against the service encapsulated in
-     * {@link #executor} using SPARQL Update.
+     * Perform a mutating operation against {@link #executor} using SPARQL Update.
      *
      * @param triples the triples with which to perform the operation
      * @param operation the type of mutating operation to perform
@@ -76,7 +75,7 @@ public class SparqlUpdateSession implements TriplestoreSession {
      * Creates serialized RDF appropriate for use in a SPARQL Update request.
      *
      * @param triples the RDF to serialize
-     * @return a block of serialized RDF as described
+     * @return a block of serialized RDF
      */
     private static String datablock(final Iterable<Triple> triples) {
         try (final StringWriter w = new StringWriter()) {
