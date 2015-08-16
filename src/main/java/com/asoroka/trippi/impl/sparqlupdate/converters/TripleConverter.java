@@ -1,5 +1,5 @@
 
-package com.asoroka.trippi.impl.sparqlupdate;
+package com.asoroka.trippi.impl.sparqlupdate.converters;
 
 import static org.apache.jena.graph.Triple.create;
 import static org.trippi.impl.RDFFactories.createTriple;
@@ -18,6 +18,8 @@ import org.jrdf.graph.Triple;
  * @author A. Soroka
  */
 public class TripleConverter extends Converter<Triple, org.apache.jena.graph.Triple> {
+
+    public static final TripleConverter tripleConverter = new TripleConverter();
 
     private final SubjectConverter subjectConverter = new SubjectConverter();
 

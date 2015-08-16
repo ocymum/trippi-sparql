@@ -1,5 +1,5 @@
 
-package com.asoroka.trippi.impl.sparqlupdate;
+package com.asoroka.trippi.impl.sparqlupdate.converters;
 
 import static java.net.URI.create;
 import static org.apache.jena.graph.NodeFactory.createURI;
@@ -10,6 +10,8 @@ import org.jrdf.graph.GraphElementFactoryException;
 import org.jrdf.graph.URIReference;
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.asoroka.trippi.impl.sparqlupdate.converters.UriConverter;
 
 public class UriConverterTest extends Assert {
 

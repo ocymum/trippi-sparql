@@ -1,5 +1,5 @@
 
-package com.asoroka.trippi.impl.sparqlupdate;
+package com.asoroka.trippi.impl.sparqlupdate.converters;
 
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Node_URI;

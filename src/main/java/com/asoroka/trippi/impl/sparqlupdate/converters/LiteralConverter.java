@@ -2,7 +2,7 @@
  *
  */
 
-package com.asoroka.trippi.impl.sparqlupdate;
+package com.asoroka.trippi.impl.sparqlupdate.converters;
 
 import static java.net.URI.create;
 import static org.apache.jena.graph.NodeFactory.createLiteral;

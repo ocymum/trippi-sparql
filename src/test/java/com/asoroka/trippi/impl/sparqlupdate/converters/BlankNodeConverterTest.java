@@ -1,5 +1,5 @@
 
-package com.asoroka.trippi.impl.sparqlupdate;
+package com.asoroka.trippi.impl.sparqlupdate.converters;
 
 import static org.apache.jena.graph.NodeFactory.createBlankNode;
 import static org.trippi.impl.RDFFactories.createResource;
@@ -9,6 +9,8 @@ import org.jrdf.graph.BlankNode;
 import org.jrdf.graph.GraphElementFactoryException;
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.asoroka.trippi.impl.sparqlupdate.converters.BlankNodeConverter;
 
 public class BlankNodeConverterTest extends Assert {
 
@@ -25,7 +27,6 @@ public class BlankNodeConverterTest extends Assert {
         } catch (final GraphElementFactoryException e) {
             throw new AssertionError();
         }
-
     }
 
     @Test

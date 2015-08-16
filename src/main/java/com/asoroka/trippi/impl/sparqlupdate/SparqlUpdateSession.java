@@ -4,10 +4,12 @@ package com.asoroka.trippi.impl.sparqlupdate;
 import static com.asoroka.trippi.impl.sparqlupdate.SparqlUpdateSession.Operation.DELETE;
 import static com.asoroka.trippi.impl.sparqlupdate.SparqlUpdateSession.Operation.INSERT;
 import static com.asoroka.trippi.impl.sparqlupdate.SparqlUpdateSessionFactory.LANGUAGES;
+import static com.asoroka.trippi.impl.sparqlupdate.converters.TripleConverter.tripleConverter;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.jena.graph.Factory.createGraphMem;
 import static org.apache.jena.riot.RDFDataMgr.write;
 import static org.apache.jena.riot.RDFFormat.TURTLE_BLOCKS;
+import static org.apache.jena.update.UpdateFactory.create;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -16,6 +18,7 @@ import java.util.function.Consumer;
 
 import org.apache.jena.graph.Graph;
 import org.apache.jena.graph.Triple;
+import org.apache.jena.update.UpdateRequest;
 import org.jrdf.graph.ObjectNode;
 import org.jrdf.graph.PredicateNode;
 import org.jrdf.graph.SubjectNode;
@@ -28,11 +31,12 @@ import org.trippi.impl.base.TriplestoreSession;
  */
 public class SparqlUpdateSession implements TriplestoreSession {
 
-    private final Consumer<String> executor;
+    /**
+     * Encapsulates the service against which to execute SPARQL Update requests.
+     */
+    private final Consumer<UpdateRequest> executor;
 
-    private final TripleConverter tripleConverter = new TripleConverter();
-
-    public SparqlUpdateSession(final Consumer<String> executor) {
+    public SparqlUpdateSession(final Consumer<UpdateRequest> executor) {
         this.executor = executor;
     }
 
@@ -48,21 +52,27 @@ public class SparqlUpdateSession implements TriplestoreSession {
 
     /**
      * Perform a mutating operation against the service encapsulated in
-     * {@link #executor}.
+     * {@link #executor} using SPARQL Update.
      *
      * @param triples the triples with which to perform the operation
      * @param operation the type of mutating operation to perform
      */
     private void mutate(final Set<org.jrdf.graph.Triple> triples, final Operation operation) {
         final Set<Triple> ts = triples.stream().map(tripleConverter::convert).collect(toSet());
-        final String query = operation + " { " + datablock(ts) + " } WHERE {}";
-        executor.accept(query);
+        final UpdateRequest request = create(operation + " { " + datablock(ts) + " } WHERE {}");
+        executor.accept(request);
     }
 
     public static enum Operation {
         INSERT, DELETE
     }
 
+    /**
+     * Creates serialized RDF appropriate for use in a SPARQL Update request.
+     *
+     * @param triples the RDF to serialize
+     * @return a block of serialized RDF as described
+     */
     private static String datablock(final Set<Triple> triples) {
         try (StringWriter w = new StringWriter()) {
             final Graph g = createGraphMem();
@@ -100,8 +110,7 @@ public class SparqlUpdateSession implements TriplestoreSession {
     }
 
     @Override
-    public TripleIterator findTriples(final SubjectNode subject, final PredicateNode predicate,
-            final ObjectNode object) {
+    public TripleIterator findTriples(final SubjectNode s, final PredicateNode p, final ObjectNode o) {
         throw new UnsupportedOperationException();
     }
 }

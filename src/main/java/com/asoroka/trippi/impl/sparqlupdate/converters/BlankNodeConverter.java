@@ -1,5 +1,5 @@
 
-package com.asoroka.trippi.impl.sparqlupdate;
+package com.asoroka.trippi.impl.sparqlupdate.converters;
 
 import static org.apache.jena.graph.NodeFactory.createBlankNode;
 

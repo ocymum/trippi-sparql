@@ -1,5 +1,5 @@
 
-package com.asoroka.trippi.impl.sparqlupdate;
+package com.asoroka.trippi.impl.sparqlupdate.converters;
 
 import java.net.URI;
 
@@ -12,6 +12,8 @@ import org.jrdf.graph.Literal;
 import org.junit.Assert;
 import org.junit.Test;
 import org.trippi.impl.RDFFactories;
+
+import com.asoroka.trippi.impl.sparqlupdate.converters.LiteralConverter;
 
 public class LiteralConverterTest extends Assert {
 

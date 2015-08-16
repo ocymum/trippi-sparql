@@ -1,5 +1,5 @@
 
-package com.asoroka.trippi.impl.sparqlupdate;
+package com.asoroka.trippi.impl.sparqlupdate.converters;
 
 import org.apache.jena.ext.com.google.common.base.Converter;
 import org.apache.jena.graph.Node;

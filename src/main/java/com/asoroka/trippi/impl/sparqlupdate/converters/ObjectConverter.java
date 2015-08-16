@@ -1,5 +1,5 @@
 
-package com.asoroka.trippi.impl.sparqlupdate;
+package com.asoroka.trippi.impl.sparqlupdate.converters;
 
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Node_Blank;
@@ -28,15 +28,13 @@ public class ObjectConverter extends NodeConverter<ObjectNode, Node> {
     protected Node doForward(final ObjectNode object) {
         if (object.isURIReference()) return uriConverter.convert((URIReference) object);
         if (object.isBlankNode()) return bnodeConverter.convert((BlankNode) object);
-        if (object.isLiteral()) return literalConverter.convert((Literal) object);
-        throw new AssertionError("Discovered an RDF node that is neither URI, blank, nor literal!");
+        return literalConverter.convert((Literal) object);
     }
 
     @Override
     protected ObjectNode doBackward(final Node object) {
         if (object.isURI()) return uriConverter.reverse().convert((Node_URI) object);
         if (object.isBlank()) return bnodeConverter.reverse().convert((Node_Blank) object);
-        if (object.isLiteral()) return literalConverter.reverse().convert((Node_Literal) object);
-        throw new AssertionError("Discovered an RDF node that is neither URI, blank, nor literal!");
+        return literalConverter.reverse().convert((Node_Literal) object);
     }
 }

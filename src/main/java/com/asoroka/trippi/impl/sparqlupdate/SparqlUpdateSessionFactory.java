@@ -2,14 +2,16 @@
 package com.asoroka.trippi.impl.sparqlupdate;
 
 import static org.apache.jena.update.UpdateExecutionFactory.createRemote;
-import static org.apache.jena.update.UpdateFactory.create;
 
 import org.trippi.impl.base.TriplestoreSessionFactory;
 
 public class SparqlUpdateSessionFactory implements TriplestoreSessionFactory {
 
-    public static final String[] LANGUAGES = new String[] {};
+    static final String[] LANGUAGES = new String[] {};
 
+    /**
+     * The SPARQL Update endpoint against which to act.
+     */
     private final String endpoint;
 
     public SparqlUpdateSessionFactory(final String endpoint) {
@@ -18,7 +20,7 @@ public class SparqlUpdateSessionFactory implements TriplestoreSessionFactory {
 
     @Override
     public SparqlUpdateSession newSession() {
-        return new SparqlUpdateSession(query -> createRemote(create(query), endpoint).execute());
+        return new SparqlUpdateSession(query -> createRemote(query, endpoint).execute());
     }
 
     @Override
