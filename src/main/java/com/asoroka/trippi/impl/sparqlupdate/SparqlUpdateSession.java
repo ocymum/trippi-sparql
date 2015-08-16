@@ -27,6 +27,10 @@ import org.trippi.TupleIterator;
 import org.trippi.impl.base.TriplestoreSession;
 
 /**
+ * A write-only {@link TriplestoreSession} implementation. The expectation for
+ * this class is that query access to the triplestore will be provided by some
+ * means outside of Trippi, for example, via some SPARQL-over-HTTP service.
+ *
  * @author A. Soroka
  */
 public class SparqlUpdateSession implements TriplestoreSession {
@@ -63,6 +67,10 @@ public class SparqlUpdateSession implements TriplestoreSession {
         executor.accept(request);
     }
 
+    /**
+     * The various operations that can be performed against a triplestore via
+     * SPARQL Update.
+     */
     public static enum Operation {
         INSERT, DELETE
     }

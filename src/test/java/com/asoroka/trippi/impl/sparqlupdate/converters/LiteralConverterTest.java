@@ -13,15 +13,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.trippi.impl.RDFFactories;
 
-import com.asoroka.trippi.impl.sparqlupdate.converters.LiteralConverter;
-
 public class LiteralConverterTest extends Assert {
 
     private static final TypeMapper tm = TypeMapper.getInstance();
 
     private static final LiteralConverter literalConverter = new LiteralConverter();
-
-    private static final String[] testCases = new String[] {"x"};
 
     @Test
     public void testSimpleLiteral() throws GraphElementFactoryException {
@@ -93,7 +89,7 @@ public class LiteralConverterTest extends Assert {
      * @param literal
      * @param converted
      */
-    private void assertTypedEquals(final Node_Literal literal, final Node_Literal converted) {
+    private static void assertTypedEquals(final Node_Literal literal, final Node_Literal converted) {
         assertEquals(literal.getLiteralLexicalForm(), converted.getLiteralLexicalForm());
         assertEquals(literal.getLiteralDatatypeURI(), converted.getLiteralDatatypeURI());
     }
