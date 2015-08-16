@@ -68,6 +68,18 @@
 			<version>1.1.2</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-fuseki1</artifactId>
+			<version>1.3.0</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>slf4j-log4j12</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -106,6 +118,41 @@
 						<phase>package</phase>
 						<goals>
 							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.9.1</version>
+				<configuration>
+					<portNames>
+						<portName>fuseki.dynamic.test.port</portName>
+					</portNames>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>reserve-network-port</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<configuration>
+					<systemPropertyVariables>
+						<fuseki.dynamic.test.port>${fuseki.dynamic.test.port}</fuseki.dynamic.test.port>
+					</systemPropertyVariables>
+				</configuration>
+				<executions>
+					<execution>
+						<id>integration-test</id>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
 						</goals>
 					</execution>
 				</executions>

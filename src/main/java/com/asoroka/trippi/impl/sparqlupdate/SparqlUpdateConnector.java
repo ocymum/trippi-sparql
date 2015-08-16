@@ -21,14 +21,13 @@ import org.trippi.io.TripleIteratorFactory;
 
 public class SparqlUpdateConnector extends TriplestoreConnector {
 
-    // TODO What are the right defaults?
-    private static final String DEFAULT_BUFFER_FLUSH_BATCH_SIZE = null;
+    private static final String DEFAULT_BUFFER_FLUSH_BATCH_SIZE = "20000";
 
-    private static final String DEFAULT_BUFFER_SAFE_CAPACITY = null;
+    private static final String DEFAULT_BUFFER_SAFE_CAPACITY = "40000";
 
-    private static final String DEFAULT_AUTO_FLUSH_BUFFER_SIZE = null;
+    private static final String DEFAULT_AUTO_FLUSH_BUFFER_SIZE = "20000";
 
-    private static final String DEFAULT_AUTO_FLUSH_DORMANT_SECONDS = null;
+    private static final String DEFAULT_AUTO_FLUSH_DORMANT_SECONDS = "5";
 
     private Map<String, String> config;
 
