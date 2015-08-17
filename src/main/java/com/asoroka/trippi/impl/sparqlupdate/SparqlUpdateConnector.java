@@ -2,10 +2,13 @@
 package com.asoroka.trippi.impl.sparqlupdate;
 
 import static java.lang.Integer.parseInt;
+import static org.apache.jena.riot.web.HttpOp.setDefaultHttpClient;
 
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.jrdf.graph.GraphElementFactory;
 import org.trippi.RDFUtil;
 import org.trippi.TriplestoreConnector;
@@ -28,6 +31,8 @@ public class SparqlUpdateConnector extends TriplestoreConnector {
     private static final String DEFAULT_AUTO_FLUSH_BUFFER_SIZE = "20000";
 
     private static final String DEFAULT_AUTO_FLUSH_DORMANT_SECONDS = "5";
+
+    private static final String DEFAULT_MAX_HTTP_CONNECTIONS = "10";
 
     private Map<String, String> config;
 
@@ -104,6 +109,12 @@ public class SparqlUpdateConnector extends TriplestoreConnector {
             factory.close();
         }
         factory = new SparqlUpdateSessionFactory(endpoint);
+
+        final PoolingClientConnectionManager connectionManager = new PoolingClientConnectionManager();
+        final int maxConnections = parseInt(config.getOrDefault("maxHttpConnections", DEFAULT_MAX_HTTP_CONNECTIONS));
+        connectionManager.setMaxTotal(maxConnections);
+        connectionManager.setDefaultMaxPerRoute(maxConnections);
+        setDefaultHttpClient(new DefaultHttpClient(connectionManager));
 
         if (tripleIteratorFactory == null) {
             tripleIteratorFactory = new TripleIteratorFactory();
