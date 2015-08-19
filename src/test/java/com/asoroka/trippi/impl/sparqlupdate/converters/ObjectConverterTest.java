@@ -6,71 +6,96 @@ import static org.apache.jena.graph.NodeFactory.createBlankNode;
 import static org.apache.jena.graph.NodeFactory.createURI;
 import static org.trippi.impl.RDFFactories.createResource;
 
+import org.apache.jena.ext.com.google.common.base.Converter;
+import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Node_Blank;
-import org.apache.jena.graph.Node_Literal;
-import org.apache.jena.graph.Node_URI;
 import org.jrdf.graph.BlankNode;
 import org.jrdf.graph.GraphElementFactoryException;
-import org.jrdf.graph.Literal;
-import org.jrdf.graph.URIReference;
-import org.junit.Assert;
-import org.junit.Test;
+import org.jrdf.graph.ObjectNode;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 import org.trippi.impl.RDFFactories;
 
-import com.asoroka.trippi.impl.sparqlupdate.converters.ObjectConverter;
+import com.asoroka.trippi.impl.sparqlupdate.converters.ObjectConverterTest.BlankObject;
+import com.asoroka.trippi.impl.sparqlupdate.converters.ObjectConverterTest.LiteralObject;
+import com.asoroka.trippi.impl.sparqlupdate.converters.ObjectConverterTest.UriObject;
 
-public class ObjectConverterTest extends Assert {
+@RunWith(Suite.class)
+@SuiteClasses({UriObject.class, BlankObject.class, LiteralObject.class})
+public class ObjectConverterTest {
 
-    private static final ObjectConverter objectConverter = new ObjectConverter();
+    static final ObjectConverter objectConverter = new ObjectConverter();
 
-    private static final String testURI = "info:test";
+    public static class UriObject extends TestConversionAndInversion<ObjectNode, Node> {
 
-    private static final URIReference testURIReference;
+        @Override
+        protected Converter<ObjectNode, Node> converter() {
+            return objectConverter;
+        }
 
-    private static final Node_URI testNodeURI = (Node_URI) createURI(testURI);
+        private static final String testURI = "info:test";
 
-    private static final BlankNode testBlankNode;
+        @Override
+        protected ObjectNode from() throws GraphElementFactoryException {
+            return createResource(create(testURI));
+        }
 
-    private static final Node_Blank testNodeBlank;
-
-    static {
-        try {
-            testURIReference = createResource(create(testURI));
-            testBlankNode = createResource();
-            testNodeBlank = (Node_Blank) createBlankNode(testBlankNode.getID());
-        } catch (final GraphElementFactoryException e) {
-            throw new AssertionError();
+        @Override
+        protected Node to() {
+            return createURI(testURI);
         }
     }
 
-    @Test
-    public void testUriObject() {
-        assertEquals(testURIReference.getURI().toString(), testNodeURI.getURI());
-        assertEquals(testNodeURI, objectConverter.convert(testURIReference));
-        assertEquals(testURIReference, objectConverter.reverse().convert(testNodeURI));
-        assertEquals(testURIReference, objectConverter.reverse().convert(objectConverter.convert(testURIReference)));
-        assertEquals(testNodeURI, objectConverter.convert(objectConverter.reverse().convert(testNodeURI)));
+    public static class BlankObject extends TestConversionAndInversion<ObjectNode, Node> {
+
+        @Override
+        protected Converter<ObjectNode, Node> converter() {
+            return objectConverter;
+        }
+
+        private static final BlankNode testBlankNode;
+
+        private static final Node_Blank testNodeBlank;
+
+        static {
+            try {
+                testBlankNode = createResource();
+                testNodeBlank = (Node_Blank) createBlankNode(testBlankNode.getID());
+            } catch (final GraphElementFactoryException e) {
+                throw new AssertionError();
+            }
+        }
+
+        @Override
+        protected ObjectNode from() {
+            return testBlankNode;
+        }
+
+        @Override
+        protected Node to() {
+            return testNodeBlank;
+        }
     }
 
-    @Test
-    public void testBlankObject() {
-        assertEquals(testBlankNode.getID(), testNodeBlank.getBlankNodeLabel());
-        assertEquals(testNodeBlank, objectConverter.convert(testBlankNode));
-        assertEquals(testBlankNode, objectConverter.reverse().convert(testNodeBlank));
-        assertEquals(testBlankNode, objectConverter.reverse().convert(objectConverter.convert(testBlankNode)));
-        assertEquals(testNodeBlank, objectConverter.convert(objectConverter.reverse().convert(testNodeBlank)));
-    }
+    public static class LiteralObject extends TestConversionAndInversion<ObjectNode, Node> {
 
-    @Test
-    public void testLiteralObject() throws GraphElementFactoryException {
+        @Override
+        protected Converter<ObjectNode, Node> converter() {
+            return objectConverter;
+        }
+
         final String simple = "Simple literal.";
-        final Literal jrdfLiteral = RDFFactories.createLiteral(simple);
-        final Node_Literal jenaLiteral = (Node_Literal) NodeFactory.createLiteral(simple);
-        assertEquals(jrdfLiteral.getLexicalForm(), jenaLiteral.getLiteralLexicalForm());
-        assertEquals(jenaLiteral, objectConverter.convert(jrdfLiteral));
-        assertEquals(jrdfLiteral, objectConverter.reverse().convert(jenaLiteral));
-        assertEquals(jrdfLiteral, objectConverter.reverse().convert(objectConverter.convert(jrdfLiteral)));
-        assertEquals(jenaLiteral, objectConverter.convert(objectConverter.reverse().convert(jenaLiteral)));
+
+        @Override
+        protected ObjectNode from() throws GraphElementFactoryException {
+            return RDFFactories.createLiteral(simple);
+        }
+
+        @Override
+        protected Node to() {
+            return NodeFactory.createLiteral(simple);
+        }
     }
 }

@@ -6,55 +6,73 @@ import static org.apache.jena.graph.NodeFactory.createBlankNode;
 import static org.apache.jena.graph.NodeFactory.createURI;
 import static org.trippi.impl.RDFFactories.createResource;
 
+import org.apache.jena.ext.com.google.common.base.Converter;
+import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Node_Blank;
-import org.apache.jena.graph.Node_URI;
 import org.jrdf.graph.BlankNode;
 import org.jrdf.graph.GraphElementFactoryException;
-import org.jrdf.graph.URIReference;
-import org.junit.Assert;
-import org.junit.Test;
+import org.jrdf.graph.SubjectNode;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-import com.asoroka.trippi.impl.sparqlupdate.converters.SubjectConverter;
+import com.asoroka.trippi.impl.sparqlupdate.converters.SubjectConverterTest.BlankSubject;
+import com.asoroka.trippi.impl.sparqlupdate.converters.SubjectConverterTest.UriSubject;
 
-public class SubjectConverterTest extends Assert {
+@RunWith(Suite.class)
+@SuiteClasses({UriSubject.class, BlankSubject.class})
+public class SubjectConverterTest {
 
-    private static final SubjectConverter subjectConverter = new SubjectConverter();
+    static final SubjectConverter subjectConverter = new SubjectConverter();
 
-    private static final String testURI = "info:test";
+    public static class UriSubject extends TestConversionAndInversion<SubjectNode, Node> {
 
-    private static final URIReference testURIReference;
+        @Override
+        protected Converter<SubjectNode, Node> converter() {
+            return subjectConverter;
+        }
 
-    private static final Node_URI testNodeURI = (Node_URI) createURI(testURI);
+        private static final String testURI = "info:test";
 
-    private static final BlankNode testBlankNode;
+        @Override
+        protected SubjectNode from() throws GraphElementFactoryException {
+            return createResource(create(testURI));
+        }
 
-    private static final Node_Blank testNodeBlank;
-
-    static {
-        try {
-            testURIReference = createResource(create(testURI));
-            testBlankNode = createResource();
-            testNodeBlank = (Node_Blank) createBlankNode(testBlankNode.getID());
-        } catch (final GraphElementFactoryException e) {
-            throw new AssertionError();
+        @Override
+        protected Node to() {
+            return createURI(testURI);
         }
     }
 
-    @Test
-    public void testUriSubject() {
-        assertEquals(testURIReference.getURI().toString(), testNodeURI.getURI());
-        assertEquals(testNodeURI, subjectConverter.convert(testURIReference));
-        assertEquals(testURIReference, subjectConverter.reverse().convert(testNodeURI));
-        assertEquals(testURIReference, subjectConverter.reverse().convert(subjectConverter.convert(testURIReference)));
-        assertEquals(testNodeURI, subjectConverter.convert(subjectConverter.reverse().convert(testNodeURI)));
-    }
+    public static class BlankSubject extends TestConversionAndInversion<SubjectNode, Node> {
 
-    @Test
-    public void testBlankSubject() {
-        assertEquals(testBlankNode.getID(), testNodeBlank.getBlankNodeLabel());
-        assertEquals(testNodeBlank, subjectConverter.convert(testBlankNode));
-        assertEquals(testBlankNode, subjectConverter.reverse().convert(testNodeBlank));
-        assertEquals(testBlankNode, subjectConverter.reverse().convert(subjectConverter.convert(testBlankNode)));
-        assertEquals(testNodeBlank, subjectConverter.convert(subjectConverter.reverse().convert(testNodeBlank)));
+        @Override
+        protected Converter<SubjectNode, Node> converter() {
+            return subjectConverter;
+        }
+
+        private static final BlankNode testBlankNode;
+
+        private static final Node_Blank testNodeBlank;
+
+        static {
+            try {
+                testBlankNode = createResource();
+                testNodeBlank = (Node_Blank) createBlankNode(testBlankNode.getID());
+            } catch (final GraphElementFactoryException e) {
+                throw new AssertionError();
+            }
+        }
+
+        @Override
+        protected SubjectNode from() {
+            return testBlankNode;
+        }
+
+        @Override
+        protected Node to() {
+            return testNodeBlank;
+        }
     }
 }

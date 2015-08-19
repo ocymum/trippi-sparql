@@ -7,16 +7,11 @@ import static org.apache.jena.graph.Triple.create;
 import static org.trippi.impl.RDFFactories.createResource;
 import static org.trippi.impl.RDFFactories.createTriple;
 
+import org.apache.jena.ext.com.google.common.base.Converter;
 import org.apache.jena.graph.Triple;
 import org.jrdf.graph.GraphElementFactoryException;
-import org.junit.Assert;
-import org.junit.Test;
 
-import com.asoroka.trippi.impl.sparqlupdate.converters.TripleConverter;
-
-public class TripleConverterTest extends Assert {
-
-    private static final TripleConverter tripleConverter = new TripleConverter();
+public class TripleConverterTest extends TestConversionAndInversion<org.jrdf.graph.Triple,Triple> {
 
     private static final String subject = "info:subject";
 
@@ -24,27 +19,19 @@ public class TripleConverterTest extends Assert {
 
     private static final String object = "info:object";
 
-    private static final Triple jenaTriple = create(createURI(subject), createURI(predicate), createURI(object));
-
-    private static final org.jrdf.graph.Triple jrdfTriple;
-
-    static {
-        try {
-            jrdfTriple = createTriple(createResource(create(subject)), createResource(create(predicate)),
-                    createResource(create(object)));
-        } catch (final GraphElementFactoryException e) {
-            throw new AssertionError();
-        }
+    @Override
+    protected Converter<org.jrdf.graph.Triple, Triple> converter() {
+        return TripleConverter.tripleConverter;
     }
 
-    @Test
-    public void testEquals() {
-        assertEquals(jenaTriple, tripleConverter.convert(jrdfTriple));
-        assertEquals(jrdfTriple, tripleConverter.reverse().convert(jenaTriple));
+    @Override
+    protected org.jrdf.graph.Triple from() throws GraphElementFactoryException {
+        return createTriple(createResource(create(subject)), createResource(create(predicate)),
+                createResource(create(object)));
     }
 
-    @Test public void testInvertible(){
-        assertEquals(jenaTriple, tripleConverter.convert(tripleConverter.reverse().convert(jenaTriple)));
-        assertEquals(jrdfTriple, tripleConverter.reverse().convert(tripleConverter.convert(jrdfTriple)));
+    @Override
+    protected Triple to() {
+        return create(createURI(subject), createURI(predicate), createURI(object));
     }
 }

@@ -5,40 +5,29 @@ import static java.net.URI.create;
 import static org.apache.jena.graph.NodeFactory.createURI;
 import static org.trippi.impl.RDFFactories.createResource;
 
-import org.apache.jena.graph.Node_URI;
+import org.apache.jena.ext.com.google.common.base.Converter;
+import org.apache.jena.graph.Node;
 import org.jrdf.graph.GraphElementFactoryException;
-import org.jrdf.graph.URIReference;
-import org.junit.Assert;
-import org.junit.Test;
+import org.jrdf.graph.PredicateNode;
 
-import com.asoroka.trippi.impl.sparqlupdate.converters.PredicateConverter;
-
-public class PredicateConverterTest extends Assert {
+public class PredicateConverterTest extends TestConversionAndInversion<PredicateNode, Node> {
 
     private static final PredicateConverter predicateConverter = new PredicateConverter();
 
     private static final String testURI = "info:test";
 
-    private static final URIReference testURIReference;
-
-    private static final Node_URI testNodeURI = (Node_URI) createURI(testURI);
-
-    static {
-        try {
-            testURIReference = createResource(create(testURI));
-        } catch (final GraphElementFactoryException e) {
-            throw new AssertionError();
-        }
-
+    @Override
+    protected Converter<PredicateNode, Node> converter() {
+        return predicateConverter;
     }
 
-    @Test
-    public void testUriPredicate() {
-        assertEquals(testURIReference.getURI().toString(), testNodeURI.getURI());
-        assertEquals(testNodeURI, predicateConverter.convert(testURIReference));
-        assertEquals(testURIReference, predicateConverter.reverse().convert(testNodeURI));
-        assertEquals(testURIReference, predicateConverter.reverse().convert(predicateConverter.convert(
-                testURIReference)));
-        assertEquals(testNodeURI, predicateConverter.convert(predicateConverter.reverse().convert(testNodeURI)));
+    @Override
+    protected PredicateNode from() throws GraphElementFactoryException {
+        return createResource(create(testURI));
+    }
+
+    @Override
+    protected Node to() {
+        return createURI(testURI);
     }
 }

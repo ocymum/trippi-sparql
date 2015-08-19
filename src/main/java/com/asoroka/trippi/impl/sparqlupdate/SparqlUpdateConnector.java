@@ -24,15 +24,15 @@ import org.trippi.io.TripleIteratorFactory;
 
 public class SparqlUpdateConnector extends TriplestoreConnector {
 
-    private static final String DEFAULT_BUFFER_FLUSH_BATCH_SIZE = "20000";
+    public static final String DEFAULT_BUFFER_FLUSH_BATCH_SIZE = "20000";
 
-    private static final String DEFAULT_BUFFER_SAFE_CAPACITY = "40000";
+    public static final String DEFAULT_BUFFER_SAFE_CAPACITY = "40000";
 
-    private static final String DEFAULT_AUTO_FLUSH_BUFFER_SIZE = "20000";
+    public static final String DEFAULT_AUTO_FLUSH_BUFFER_SIZE = "20000";
 
-    private static final String DEFAULT_AUTO_FLUSH_DORMANT_SECONDS = "5";
+    public static final String DEFAULT_AUTO_FLUSH_DORMANT_SECONDS = "5";
 
-    private static final String DEFAULT_MAX_HTTP_CONNECTIONS = "10";
+    public static final String DEFAULT_MAX_HTTP_CONNECTIONS = "10";
 
     private Map<String, String> config;
 

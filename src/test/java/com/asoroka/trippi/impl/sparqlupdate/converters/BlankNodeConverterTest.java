@@ -4,15 +4,12 @@ package com.asoroka.trippi.impl.sparqlupdate.converters;
 import static org.apache.jena.graph.NodeFactory.createBlankNode;
 import static org.trippi.impl.RDFFactories.createResource;
 
+import org.apache.jena.ext.com.google.common.base.Converter;
 import org.apache.jena.graph.Node_Blank;
 import org.jrdf.graph.BlankNode;
 import org.jrdf.graph.GraphElementFactoryException;
-import org.junit.Assert;
-import org.junit.Test;
 
-import com.asoroka.trippi.impl.sparqlupdate.converters.BlankNodeConverter;
-
-public class BlankNodeConverterTest extends Assert {
+public class BlankNodeConverterTest extends TestConversionAndInversion<BlankNode, Node_Blank> {
 
     private static final BlankNodeConverter bnodeConverter = new BlankNodeConverter();
 
@@ -29,16 +26,18 @@ public class BlankNodeConverterTest extends Assert {
         }
     }
 
-    @Test
-    public void testEqual() {
-        assertEquals(testBlankNode.getID(), testNodeBlank.getBlankNodeLabel());
-        assertEquals(testNodeBlank, bnodeConverter.convert(testBlankNode));
-        assertEquals(testBlankNode, bnodeConverter.reverse().convert(testNodeBlank));
+    @Override
+    protected Converter<BlankNode, Node_Blank> converter() {
+        return bnodeConverter;
     }
 
-    @Test
-    public void testInvertible() {
-        assertEquals(testBlankNode, bnodeConverter.reverse().convert(bnodeConverter.convert(testBlankNode)));
-        assertEquals(testNodeBlank, bnodeConverter.convert(bnodeConverter.reverse().convert(testNodeBlank)));
+    @Override
+    protected BlankNode from() {
+        return testBlankNode;
+    }
+
+    @Override
+    protected Node_Blank to() {
+        return testNodeBlank;
     }
 }
