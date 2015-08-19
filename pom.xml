@@ -8,8 +8,8 @@
 	<artifactId>trippi-sparql-update</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
-	<name>Trippi for Jena</name>
-	<description>Trippi implementation for Apache Jena</description>
+	<name>Trippi :: SPARQL Update</name>
+	<description>Trippi RDF SPI implementation using SPARQL Update over HTTP</description>
 
 	<dependencies>
 		<dependency>
