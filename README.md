@@ -4,7 +4,7 @@ To build (requires Java 8):
 
     cd trippi-sparql-update ; mvn clean install
 
-This will result in a large JAR in the `target/` directory which contains the connector and its dependencies. To use this connector with Fedora 3, this large JAR can be dropped into the `WEB-INF/lib/` directory of a Fedora 3 web-application. Then, a `<datastore/>` element must be configured in `fedora.fcfg`. An example is shown below featuring the various parameters available. For each parameter except `connectorClassName` and `sparqlUpdateEndpoint`, a default will be used if no `<param/>` element for that parameter is supplied.
+This will result in a large `trippi-sparql-update-*.jar` JAR in the `target/` directory which contains the connector and its dependencies. To use this connector with Fedora 3, this large JAR can be dropped into the `WEB-INF/lib/` directory of a Fedora 3 web-application. Then, a `<datastore/>` element must be configured in `fedora.fcfg`. An example is shown below featuring the various parameters available. For each parameter except `connectorClassName` and `sparqlUpdateEndpoint`, a default will be used if no `<param/>` element for that parameter is supplied.
 
     <datastore id="sparqlUpdateTriplestore">
         <comment>Triplestore addressed by SPARQL-over-HTTP used by the Resource Index</comment>
