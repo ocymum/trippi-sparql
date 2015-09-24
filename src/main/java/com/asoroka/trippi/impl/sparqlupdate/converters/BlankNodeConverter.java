@@ -37,6 +37,5 @@ public class BlankNodeConverter extends NodeConverter<BlankNode, Node_Blank> {
         }
 
         private static final long serialVersionUID = 1L;
-
     }
 }

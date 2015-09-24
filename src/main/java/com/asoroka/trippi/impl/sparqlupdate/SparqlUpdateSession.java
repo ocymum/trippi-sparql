@@ -37,6 +37,11 @@ public class SparqlUpdateSession implements TriplestoreSession {
      */
     private final Consumer<UpdateRequest> executor;
 
+    /**
+     * Default constructor.
+     *
+     * @param executor the service against which to execute SPARQL Update requests
+     */
     public SparqlUpdateSession(final Consumer<UpdateRequest> executor) {
         this.executor = executor;
     }
@@ -82,7 +87,7 @@ public class SparqlUpdateSession implements TriplestoreSession {
             write(w, triples.iterator());
             return w.toString();
         } catch (final IOException e) {
-            throw new AssertionError();
+            throw new AssertionError(e);
         }
     }
 

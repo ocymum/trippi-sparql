@@ -11,6 +11,11 @@ import org.jrdf.graph.GraphElementFactoryException;
  */
 public class GraphElementFactoryRuntimeException extends RuntimeException {
 
+    /**
+     * Default constructor.
+     *
+     * @param e
+     */
     public GraphElementFactoryRuntimeException(final GraphElementFactoryException e) {
         super(e);
     }

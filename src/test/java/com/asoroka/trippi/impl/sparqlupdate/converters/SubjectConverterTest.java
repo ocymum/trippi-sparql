@@ -61,7 +61,7 @@ public class SubjectConverterTest {
                 testBlankNode = createResource();
                 testNodeBlank = (Node_Blank) createBlankNode(testBlankNode.getID());
             } catch (final GraphElementFactoryException e) {
-                throw new AssertionError();
+                throw new AssertionError(e);
             }
         }
 

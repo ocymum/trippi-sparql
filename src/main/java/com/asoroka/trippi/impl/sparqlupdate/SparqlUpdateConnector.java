@@ -22,6 +22,12 @@ import org.trippi.impl.base.MemUpdateBuffer;
 import org.trippi.impl.base.UpdateBuffer;
 import org.trippi.io.TripleIteratorFactory;
 
+/**
+ * A {@link TriplestoreConnector} employing SPARQL Update.
+ *
+ * @author A. Soroka
+ *
+ */
 public class SparqlUpdateConnector extends TriplestoreConnector {
 
     public static final String DEFAULT_BUFFER_FLUSH_BATCH_SIZE = "20000";

@@ -22,7 +22,7 @@ public class BlankNodeConverterTest extends TestConversionAndInversion<BlankNode
             testBlankNode = createResource();
             testNodeBlank = (Node_Blank) createBlankNode(testBlankNode.getID());
         } catch (final GraphElementFactoryException e) {
-            throw new AssertionError();
+            throw new AssertionError(e);
         }
     }
 
