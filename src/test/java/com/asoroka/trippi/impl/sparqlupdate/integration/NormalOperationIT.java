@@ -34,8 +34,8 @@ import com.asoroka.trippi.impl.sparqlupdate.SparqlUpdateConnector;
 /**
  * This integration test expects to find a Fuseki instance running at a port as
  * defined below and under the webapp name defined below. This is handled by
- * Maven in the course of a normal build, but for running this test inside an
- * IDE, it will be necessary to manually start a webapp in that wise.
+ * Maven in the course of a normal build, but to run this test inside an
+ * IDE, it will be necessary to manually start a webapp to perform that role.
  *
  * @author A. Soroka
  */
