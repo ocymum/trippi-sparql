@@ -4,7 +4,8 @@ To build (requires Java 8):
 
     cd trippi-sparql-update ; mvn clean install
 
-This will result in a large `trippi-sparql-update-*.jar` JAR in the `target/` directory which contains the connector and its dependencies. To use this connector with Fedora 3, this large JAR can be dropped into the `WEB-INF/lib/` directory of a Fedora 3 web-application. Then, a `<datastore/>` element must be configured in `fedora.fcfg`. An example is shown below featuring the various parameters available. For each parameter except `connectorClassName` and the various SPARQL endpoints, a default will be used if no `<param/>` element for that parameter is supplied. The default for the SPARQL CONSTRUCT Query endpoint is just the ordinary SPARQL Query endpoint, and the default for the ordinary SPARQL Query endpoint is the SPARQL Update endpoint. 
+This will result in a large `trippi-sparql-update-*.jar` JAR in the `target/` directory which contains the connector and its dependencies. To use this connector with Fedora 3, this large JAR can be dropped into the `WEB-INF/lib/` directory of a Fedora 3 web-application. Then, a `<datastore/>` element must be configured in `fedora.fcfg`. An example is shown below featuring the various parameters available. For each parameter except `connectorClassName` and `updateEndpoint`, a default will be used if no `<param/>` element for that parameter is supplied. The default will be the value shown in the example below, except that the default for the SPARQL CONSTRUCT Query endpoint is just the ordinary SPARQL Query endpoint, and the default for the ordinary SPARQL Query endpoint is the SPARQL Update endpoint. 
+
 
     <datastore id="sparqlUpdateTriplestore">
         <comment>Triplestore addressed by SPARQL-over-HTTP used by the Resource Index</comment>
