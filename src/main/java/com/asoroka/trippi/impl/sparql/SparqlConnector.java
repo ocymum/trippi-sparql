@@ -1,5 +1,5 @@
 
-package com.asoroka.trippi.impl.sparqlupdate;
+package com.asoroka.trippi.impl.sparql;
 
 import static java.lang.Integer.parseInt;
 import static org.apache.jena.riot.web.HttpOp.setDefaultHttpClient;
@@ -26,9 +26,8 @@ import org.trippi.io.TripleIteratorFactory;
  * A {@link TriplestoreConnector} employing SPARQL Update.
  *
  * @author A. Soroka
- *
  */
-public class SparqlUpdateConnector extends TriplestoreConnector {
+public class SparqlConnector extends TriplestoreConnector {
 
     public static final String DEFAULT_BUFFER_FLUSH_BATCH_SIZE = "20000";
 
@@ -42,7 +41,7 @@ public class SparqlUpdateConnector extends TriplestoreConnector {
 
     private Map<String, String> config;
 
-    private SparqlUpdateSessionFactory factory;
+    private SparqlSessionFactory factory;
 
     private TripleIteratorFactory tripleIteratorFactory;
 
@@ -109,12 +108,14 @@ public class SparqlUpdateConnector extends TriplestoreConnector {
                 DEFAULT_AUTO_FLUSH_BUFFER_SIZE));
         final int autoFlushDormantSeconds = parseInt(config.getOrDefault("autoFlushDormantSeconds",
                 DEFAULT_AUTO_FLUSH_DORMANT_SECONDS));
-        final String endpoint = config.get("sparqlUpdateEndpoint");
+        final String updateEndpoint = config.get("updateEndpoint");
+        final String queryEndpoint = config.getOrDefault("queryEndpoint", updateEndpoint);
+        final String constructEndpoint = config.getOrDefault("constructEndpoint", queryEndpoint);
 
         if (factory != null) {
             factory.close();
         }
-        factory = new SparqlUpdateSessionFactory(endpoint);
+        factory = new SparqlSessionFactory(updateEndpoint, queryEndpoint, constructEndpoint);
 
         final PoolingClientConnectionManager connectionManager = new PoolingClientConnectionManager();
         final int maxConnections = parseInt(config.getOrDefault("maxHttpConnections", DEFAULT_MAX_HTTP_CONNECTIONS));

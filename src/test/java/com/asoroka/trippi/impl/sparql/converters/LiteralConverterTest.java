@@ -1,5 +1,5 @@
 
-package com.asoroka.trippi.impl.sparqlupdate.converters;
+package com.asoroka.trippi.impl.sparql.converters;
 
 import java.net.URI;
 
@@ -17,24 +17,22 @@ public class LiteralConverterTest extends Assert {
 
     private static final TypeMapper tm = TypeMapper.getInstance();
 
-    private static final LiteralConverter literalConverter = new LiteralConverter();
-
     @Test
     public void testSimpleLiteral() throws GraphElementFactoryException {
         final String simple = "Simple literal.";
         final Literal jrdfLiteral = RDFFactories.createLiteral(simple);
         final Node_Literal jenaLiteral = (Node_Literal) NodeFactory.createLiteral(simple);
         assertEquals(jrdfLiteral.getLexicalForm(), jenaLiteral.getLiteralLexicalForm());
-        assertEquals(jenaLiteral, literalConverter.convert(jrdfLiteral));
+        assertEquals(jenaLiteral, LiteralConverter.literalConverter.convert(jrdfLiteral));
         // JRDF does not implement RDF 1.1 literal equality, wherein a literal with no datatype and a literal with the
         // same lexical form but a xsd:string datatype are in fact equal, so we tweak this test to be as close as it
         // can be to correct.
-        assertEquals(jrdfLiteral.getLexicalForm(), literalConverter.reverse().convert(jenaLiteral).getLexicalForm());
-        assertEquals(jenaLiteral, literalConverter.convert(literalConverter.reverse().convert(jenaLiteral)));
+        assertEquals(jrdfLiteral.getLexicalForm(), LiteralConverter.literalConverter.reverse().convert(jenaLiteral).getLexicalForm());
+        assertEquals(jenaLiteral, LiteralConverter.literalConverter.convert(LiteralConverter.literalConverter.reverse().convert(jenaLiteral)));
         // JRDF does not implement RDF 1.1 literal equality, wherein a literal with no datatype and a literal with the
         // same lexical form but a xsd:string datatype are in fact equal, so we tweak this test to be as close as it
         // can be to correct.
-        assertEquals(jrdfLiteral.getLexicalForm(), literalConverter.reverse().convert(literalConverter.convert(
+        assertEquals(jrdfLiteral.getLexicalForm(), LiteralConverter.literalConverter.reverse().convert(LiteralConverter.literalConverter.convert(
                 jrdfLiteral)).getLexicalForm());
     }
 
@@ -46,10 +44,10 @@ public class LiteralConverterTest extends Assert {
         final Node_Literal jenaLiteral = (Node_Literal) NodeFactory.createLiteral(lex, lang);
         assertEquals(jrdfLiteral.getLexicalForm(), jenaLiteral.getLiteralLexicalForm());
         assertEquals(jrdfLiteral.getLanguage(), jenaLiteral.getLiteralLanguage());
-        assertEquals(jenaLiteral, literalConverter.convert(jrdfLiteral));
-        assertEquals(jrdfLiteral, literalConverter.reverse().convert(jenaLiteral));
-        assertEquals(jenaLiteral, literalConverter.convert(literalConverter.reverse().convert(jenaLiteral)));
-        assertEquals(jrdfLiteral, literalConverter.reverse().convert(literalConverter.convert(jrdfLiteral)));
+        assertEquals(jenaLiteral, LiteralConverter.literalConverter.convert(jrdfLiteral));
+        assertEquals(jrdfLiteral, LiteralConverter.literalConverter.reverse().convert(jenaLiteral));
+        assertEquals(jenaLiteral, LiteralConverter.literalConverter.convert(LiteralConverter.literalConverter.reverse().convert(jenaLiteral)));
+        assertEquals(jrdfLiteral, LiteralConverter.literalConverter.reverse().convert(LiteralConverter.literalConverter.convert(jrdfLiteral)));
     }
 
     @Test
@@ -61,10 +59,10 @@ public class LiteralConverterTest extends Assert {
         tm.registerDatatype(dtype);
         final Node_Literal jenaLiteral = (Node_Literal) NodeFactory.createLiteral(lex, dtype);
         assertEquals(jrdfLiteral.getLexicalForm(), jenaLiteral.getLiteralLexicalForm());
-        assertEquals(jenaLiteral, literalConverter.convert(jrdfLiteral));
-        assertEquals(jrdfLiteral, literalConverter.reverse().convert(jenaLiteral));
-        assertEquals(jenaLiteral, literalConverter.convert(literalConverter.reverse().convert(jenaLiteral)));
-        assertEquals(jrdfLiteral, literalConverter.reverse().convert(literalConverter.convert(jrdfLiteral)));
+        assertEquals(jenaLiteral, LiteralConverter.literalConverter.convert(jrdfLiteral));
+        assertEquals(jrdfLiteral, LiteralConverter.literalConverter.reverse().convert(jenaLiteral));
+        assertEquals(jenaLiteral, LiteralConverter.literalConverter.convert(LiteralConverter.literalConverter.reverse().convert(jenaLiteral)));
+        assertEquals(jrdfLiteral, LiteralConverter.literalConverter.reverse().convert(LiteralConverter.literalConverter.convert(jrdfLiteral)));
     }
 
     @Test
@@ -75,10 +73,10 @@ public class LiteralConverterTest extends Assert {
         final BaseDatatype dtype = new BaseDatatype(datatypeURI);
         final Node_Literal jenaLiteral = (Node_Literal) NodeFactory.createLiteral(lex, dtype);
         assertEquals(jrdfLiteral.getLexicalForm(), jenaLiteral.getLiteralLexicalForm());
-        assertTypedEquals(jenaLiteral, literalConverter.convert(jrdfLiteral));
-        assertEquals(jrdfLiteral, literalConverter.reverse().convert(jenaLiteral));
-        assertTypedEquals(jenaLiteral, literalConverter.convert(literalConverter.reverse().convert(jenaLiteral)));
-        assertEquals(jrdfLiteral, literalConverter.reverse().convert(literalConverter.convert(jrdfLiteral)));
+        assertTypedEquals(jenaLiteral, LiteralConverter.literalConverter.convert(jrdfLiteral));
+        assertEquals(jrdfLiteral, LiteralConverter.literalConverter.reverse().convert(jenaLiteral));
+        assertTypedEquals(jenaLiteral, LiteralConverter.literalConverter.convert(LiteralConverter.literalConverter.reverse().convert(jenaLiteral)));
+        assertEquals(jrdfLiteral, LiteralConverter.literalConverter.reverse().convert(LiteralConverter.literalConverter.convert(jrdfLiteral)));
     }
 
     /**

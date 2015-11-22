@@ -1,5 +1,9 @@
 
-package com.asoroka.trippi.impl.sparqlupdate.converters;
+package com.asoroka.trippi.impl.sparql.converters;
+
+import static com.asoroka.trippi.impl.sparql.converters.BlankNodeConverter.blankNodeConverter;
+import static com.asoroka.trippi.impl.sparql.converters.LiteralConverter.literalConverter;
+import static com.asoroka.trippi.impl.sparql.converters.UriConverter.uriConverter;
 
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Node_Blank;
@@ -18,23 +22,21 @@ import org.jrdf.graph.URIReference;
  */
 public class ObjectConverter extends NodeConverter<ObjectNode, Node> {
 
-    private final UriConverter uriConverter = new UriConverter();
+    public static final ObjectConverter objectConverter = new ObjectConverter();
 
-    private final BlankNodeConverter bnodeConverter = new BlankNodeConverter();
-
-    private final LiteralConverter literalConverter = new LiteralConverter();
+    private ObjectConverter() {}
 
     @Override
     protected Node doForward(final ObjectNode object) {
         if (object.isURIReference()) return uriConverter.convert((URIReference) object);
-        if (object.isBlankNode()) return bnodeConverter.convert((BlankNode) object);
+        if (object.isBlankNode()) return blankNodeConverter.convert((BlankNode) object);
         return literalConverter.convert((Literal) object);
     }
 
     @Override
     protected ObjectNode doBackward(final Node object) {
         if (object.isURI()) return uriConverter.reverse().convert((Node_URI) object);
-        if (object.isBlank()) return bnodeConverter.reverse().convert((Node_Blank) object);
+        if (object.isBlank()) return blankNodeConverter.reverse().convert((Node_Blank) object);
         return literalConverter.reverse().convert((Node_Literal) object);
     }
 }

@@ -1,5 +1,5 @@
 
-package com.asoroka.trippi.impl.sparqlupdate.converters;
+package com.asoroka.trippi.impl.sparql.converters;
 
 import static java.net.URI.create;
 import static org.apache.jena.graph.NodeFactory.createBlankNode;
@@ -16,20 +16,18 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import com.asoroka.trippi.impl.sparqlupdate.converters.SubjectConverterTest.BlankSubject;
-import com.asoroka.trippi.impl.sparqlupdate.converters.SubjectConverterTest.UriSubject;
+import com.asoroka.trippi.impl.sparql.converters.SubjectConverterTest.BlankSubject;
+import com.asoroka.trippi.impl.sparql.converters.SubjectConverterTest.UriSubject;
 
 @RunWith(Suite.class)
 @SuiteClasses({UriSubject.class, BlankSubject.class})
 public class SubjectConverterTest {
 
-    static final SubjectConverter subjectConverter = new SubjectConverter();
-
     public static class UriSubject extends TestConversionAndInversion<SubjectNode, Node> {
 
         @Override
         protected Converter<SubjectNode, Node> converter() {
-            return subjectConverter;
+            return SubjectConverter.subjectConverter;
         }
 
         private static final String testURI = "info:test";
@@ -49,7 +47,7 @@ public class SubjectConverterTest {
 
         @Override
         protected Converter<SubjectNode, Node> converter() {
-            return subjectConverter;
+            return SubjectConverter.subjectConverter;
         }
 
         private static final BlankNode testBlankNode;

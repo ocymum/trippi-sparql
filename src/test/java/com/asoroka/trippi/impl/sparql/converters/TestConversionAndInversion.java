@@ -1,5 +1,5 @@
 
-package com.asoroka.trippi.impl.sparqlupdate.converters;
+package com.asoroka.trippi.impl.sparql.converters;
 
 import static org.junit.Assert.assertEquals;
 

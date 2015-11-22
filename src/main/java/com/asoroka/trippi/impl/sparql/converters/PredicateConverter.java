@@ -1,5 +1,7 @@
 
-package com.asoroka.trippi.impl.sparqlupdate.converters;
+package com.asoroka.trippi.impl.sparql.converters;
+
+import static com.asoroka.trippi.impl.sparql.converters.UriConverter.uriConverter;
 
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Node_URI;
@@ -14,7 +16,9 @@ import org.jrdf.graph.URIReference;
  */
 public class PredicateConverter extends NodeConverter<PredicateNode, Node> {
 
-    private final UriConverter uriConverter = new UriConverter();
+    public static final PredicateConverter predicateConverter = new PredicateConverter();
+
+    private PredicateConverter() {}
 
     @Override
     protected Node doForward(final PredicateNode p) {

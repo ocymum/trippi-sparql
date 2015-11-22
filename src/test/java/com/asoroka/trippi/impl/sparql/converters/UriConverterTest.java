@@ -1,6 +1,7 @@
 
-package com.asoroka.trippi.impl.sparqlupdate.converters;
+package com.asoroka.trippi.impl.sparql.converters;
 
+import static com.asoroka.trippi.impl.sparql.converters.UriConverter.uriConverter;
 import static java.net.URI.create;
 import static org.apache.jena.graph.NodeFactory.createURI;
 import static org.trippi.impl.RDFFactories.createResource;
@@ -13,8 +14,6 @@ import org.jrdf.graph.URIReference;
 public class UriConverterTest extends TestConversionAndInversion<URIReference, Node_URI> {
 
     private static final String testURI = "info:test";
-
-    private static final UriConverter uriConverter = new UriConverter();
 
     @Override
     protected Converter<URIReference, Node_URI> converter() {

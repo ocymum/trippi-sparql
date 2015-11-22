@@ -1,12 +1,14 @@
 
-package com.asoroka.trippi.impl.sparqlupdate.converters;
+package com.asoroka.trippi.impl.sparql.converters;
 
+import static com.asoroka.trippi.impl.sparql.converters.ObjectConverter.objectConverter;
+import static com.asoroka.trippi.impl.sparql.converters.PredicateConverter.predicateConverter;
+import static com.asoroka.trippi.impl.sparql.converters.SubjectConverter.subjectConverter;
 import static org.apache.jena.graph.Triple.create;
-import static org.trippi.impl.RDFFactories.createTriple;
 
 import org.apache.jena.ext.com.google.common.base.Converter;
-import org.jrdf.graph.GraphElementFactoryException;
 import org.jrdf.graph.Triple;
+import org.trippi.impl.FreeTriple;
 
 /**
  * Converts an RDF triple in the JRDF system to the same triple in the Jena
@@ -21,12 +23,6 @@ public class TripleConverter extends Converter<Triple, org.apache.jena.graph.Tri
 
     public static final TripleConverter tripleConverter = new TripleConverter();
 
-    private final SubjectConverter subjectConverter = new SubjectConverter();
-
-    private final ObjectConverter objectConverter = new ObjectConverter();
-
-    private final PredicateConverter predicateConverter = new PredicateConverter();
-
     @Override
     protected org.apache.jena.graph.Triple doForward(final Triple t) {
         return create(subjectConverter.convert(t.getSubject()), predicateConverter.convert(t.getPredicate()),
@@ -35,11 +31,7 @@ public class TripleConverter extends Converter<Triple, org.apache.jena.graph.Tri
 
     @Override
     protected Triple doBackward(final org.apache.jena.graph.Triple t) {
-        try {
-            return createTriple(subjectConverter.reverse().convert(t.getSubject()), predicateConverter.reverse()
-                    .convert(t.getPredicate()), objectConverter.reverse().convert(t.getObject()));
-        } catch (final GraphElementFactoryException e) {
-            throw new GraphElementFactoryRuntimeException(e);
-        }
+        return new FreeTriple(subjectConverter.reverse().convert(t.getSubject()), predicateConverter.reverse().convert(t
+                .getPredicate()), objectConverter.reverse().convert(t.getObject()));
     }
 }

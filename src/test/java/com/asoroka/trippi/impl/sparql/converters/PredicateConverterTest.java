@@ -1,5 +1,5 @@
 
-package com.asoroka.trippi.impl.sparqlupdate.converters;
+package com.asoroka.trippi.impl.sparql.converters;
 
 import static java.net.URI.create;
 import static org.apache.jena.graph.NodeFactory.createURI;
@@ -12,13 +12,11 @@ import org.jrdf.graph.PredicateNode;
 
 public class PredicateConverterTest extends TestConversionAndInversion<PredicateNode, Node> {
 
-    private static final PredicateConverter predicateConverter = new PredicateConverter();
-
     private static final String testURI = "info:test";
 
     @Override
     protected Converter<PredicateNode, Node> converter() {
-        return predicateConverter;
+        return PredicateConverter.predicateConverter;
     }
 
     @Override

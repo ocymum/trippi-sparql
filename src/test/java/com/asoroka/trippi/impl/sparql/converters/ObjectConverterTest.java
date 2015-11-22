@@ -1,5 +1,5 @@
 
-package com.asoroka.trippi.impl.sparqlupdate.converters;
+package com.asoroka.trippi.impl.sparql.converters;
 
 import static java.net.URI.create;
 import static org.apache.jena.graph.NodeFactory.createBlankNode;
@@ -18,21 +18,19 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 import org.trippi.impl.RDFFactories;
 
-import com.asoroka.trippi.impl.sparqlupdate.converters.ObjectConverterTest.BlankObject;
-import com.asoroka.trippi.impl.sparqlupdate.converters.ObjectConverterTest.LiteralObject;
-import com.asoroka.trippi.impl.sparqlupdate.converters.ObjectConverterTest.UriObject;
+import com.asoroka.trippi.impl.sparql.converters.ObjectConverterTest.BlankObject;
+import com.asoroka.trippi.impl.sparql.converters.ObjectConverterTest.LiteralObject;
+import com.asoroka.trippi.impl.sparql.converters.ObjectConverterTest.UriObject;
 
 @RunWith(Suite.class)
 @SuiteClasses({UriObject.class, BlankObject.class, LiteralObject.class})
 public class ObjectConverterTest {
 
-    static final ObjectConverter objectConverter = new ObjectConverter();
-
     public static class UriObject extends TestConversionAndInversion<ObjectNode, Node> {
 
         @Override
         protected Converter<ObjectNode, Node> converter() {
-            return objectConverter;
+            return ObjectConverter.objectConverter;
         }
 
         private static final String testURI = "info:test";
@@ -52,7 +50,7 @@ public class ObjectConverterTest {
 
         @Override
         protected Converter<ObjectNode, Node> converter() {
-            return objectConverter;
+            return ObjectConverter.objectConverter;
         }
 
         private static final BlankNode testBlankNode;
@@ -83,7 +81,7 @@ public class ObjectConverterTest {
 
         @Override
         protected Converter<ObjectNode, Node> converter() {
-            return objectConverter;
+            return ObjectConverter.objectConverter;
         }
 
         final String simple = "Simple literal.";

@@ -4,4 +4,4 @@
  * @author A. Soroka
  */
 
-package com.asoroka.trippi.impl.sparqlupdate.converters;
+package com.asoroka.trippi.impl.sparql.converters;

@@ -1,6 +1,7 @@
 
-package com.asoroka.trippi.impl.sparqlupdate.converters;
+package com.asoroka.trippi.impl.sparql.converters;
 
+import static com.asoroka.trippi.impl.sparql.converters.BlankNodeConverter.blankNodeConverter;
 import static org.apache.jena.graph.NodeFactory.createBlankNode;
 import static org.trippi.impl.RDFFactories.createResource;
 
@@ -10,8 +11,6 @@ import org.jrdf.graph.BlankNode;
 import org.jrdf.graph.GraphElementFactoryException;
 
 public class BlankNodeConverterTest extends TestConversionAndInversion<BlankNode, Node_Blank> {
-
-    private static final BlankNodeConverter bnodeConverter = new BlankNodeConverter();
 
     private static final BlankNode testBlankNode;
 
@@ -28,7 +27,7 @@ public class BlankNodeConverterTest extends TestConversionAndInversion<BlankNode
 
     @Override
     protected Converter<BlankNode, Node_Blank> converter() {
-        return bnodeConverter;
+        return blankNodeConverter;
     }
 
     @Override

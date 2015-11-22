@@ -1,5 +1,5 @@
 
-package com.asoroka.trippi.impl.sparqlupdate.converters;
+package com.asoroka.trippi.impl.sparql.converters;
 
 import org.apache.jena.ext.com.google.common.base.Converter;
 import org.apache.jena.graph.Node;
@@ -12,10 +12,8 @@ import org.apache.jena.graph.Node;
  * may NOT take responsibility for the scope of blank nodes.
  *
  * @author A. Soroka
- * @param <JRDFNode> a particular type of RDF node in the JRDF system
- * @param <JenaNode> a particular type of RDF node in the Jena system
+ * @param <JRDFNodeType> a particular type of RDF node in the JRDF system
+ * @param <JenaNodeType> a particular type of RDF node in the Jena system
  */
-public abstract class NodeConverter<JRDFNode extends org.jrdf.graph.Node, JenaNode extends Node> extends
-Converter<JRDFNode, JenaNode> {
-    // THIS PAGE INTENTIONALLY LEFT BLANK
-}
+public abstract class NodeConverter<JRDFNodeType extends org.jrdf.graph.Node, JenaNodeType extends Node> extends
+Converter<JRDFNodeType, JenaNodeType> {}

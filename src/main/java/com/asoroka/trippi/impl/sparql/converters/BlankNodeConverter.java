@@ -1,5 +1,5 @@
 
-package com.asoroka.trippi.impl.sparqlupdate.converters;
+package com.asoroka.trippi.impl.sparql.converters;
 
 import static org.apache.jena.graph.NodeFactory.createBlankNode;
 
@@ -12,6 +12,10 @@ import org.jrdf.graph.BlankNode;
  * @author A. Soroka
  */
 public class BlankNodeConverter extends NodeConverter<BlankNode, Node_Blank> {
+
+    public static final BlankNodeConverter blankNodeConverter = new BlankNodeConverter();
+
+    private BlankNodeConverter() {}
 
     @Override
     protected Node_Blank doForward(final BlankNode bnode) {

@@ -4,18 +4,24 @@ To build (requires Java 8):
 
     cd trippi-sparql-update ; mvn clean install
 
-This will result in a large `trippi-sparql-update-*.jar` JAR in the `target/` directory which contains the connector and its dependencies. To use this connector with Fedora 3, this large JAR can be dropped into the `WEB-INF/lib/` directory of a Fedora 3 web-application. Then, a `<datastore/>` element must be configured in `fedora.fcfg`. An example is shown below featuring the various parameters available. For each parameter except `connectorClassName` and `sparqlUpdateEndpoint`, a default will be used if no `<param/>` element for that parameter is supplied.
+This will result in a large `trippi-sparql-update-*.jar` JAR in the `target/` directory which contains the connector and its dependencies. To use this connector with Fedora 3, this large JAR can be dropped into the `WEB-INF/lib/` directory of a Fedora 3 web-application. Then, a `<datastore/>` element must be configured in `fedora.fcfg`. An example is shown below featuring the various parameters available. For each parameter except `connectorClassName` and the various SPARQL endpoints, a default will be used if no `<param/>` element for that parameter is supplied. The default for the SPARQL CONSTRUCT Query endpoint is just the ordinary SPARQL Query endpoint, and the default for the ordinary SPARQL Query endpoint is the SPARQL Update endpoint. 
 
     <datastore id="sparqlUpdateTriplestore">
         <comment>Triplestore addressed by SPARQL-over-HTTP used by the Resource Index</comment>
-        <param name="connectorClassName" value="com.asoroka.trippi.impl.sparqlupdate.SparqlUpdateConnector">
+        <param name="connectorClassName" value="com.asoroka.trippi.impl.sparql.SparqlConnector">
             <comment>The name of the Trippi Connector class used to communicate with the triplestore.</comment>
         </param>
         <param name="maxHttpConnections" value="10">
             <comment>The maximum number of clients in the HTTP client pool used for SPARQL Update requests.</comment>
         </param>
-        <param name="sparqlUpdateEndpoint" value="http://localhost:3030/fuseki/update">
+        <param name="updateEndpoint" value="http://localhost:3030/fuseki/update">
             <comment>The URL of a SPARQL Update endpoint for the triplestore to be used with this connector.</comment>
+        </param>
+        <param name="queryEndpoint" value="http://localhost:3030/fuseki/update">
+            <comment>The URL of a SPARQL Query endpoint for the triplestore to be used with this connector. This endpoint will be used for non-CONSTRUCT queries.</comment>
+        </param>
+        <param name="constructEndpoint" value="http://localhost:3030/fuseki/update">
+            <comment>The URL of a SPARQL Query endpoint for the triplestore to be used with this connector. This endpoint will be used for CONSTRUCT queries.</comment>
         </param>
         <param name="autoFlushDormantSeconds" value="5">
           <comment>Seconds of buffer inactivity that will trigger an auto-flush. If this threshold is reached, flushing will occur in the background, during which time the buffer is still available for writing.</comment>
