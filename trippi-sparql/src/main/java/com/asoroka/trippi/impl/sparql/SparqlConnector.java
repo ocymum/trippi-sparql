@@ -31,7 +31,7 @@ import org.trippi.io.TripleIteratorFactory;
  */
 public class SparqlConnector extends TriplestoreConnector {
 
-	private static final Logger log = getLogger(SparqlConnector.class.getName());
+	private static final Logger log = getLogger(SparqlConnector.class);
 
 	public static final String DEFAULT_BUFFER_FLUSH_BATCH_SIZE = "20000";
 

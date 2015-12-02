@@ -5,7 +5,6 @@ import static com.asoroka.trippi.impl.sparql.converters.TripleConverter.tripleCo
 import static org.apache.jena.ext.com.google.common.collect.ImmutableMap.of;
 import static org.apache.jena.query.QueryExecutionFactory.sparqlService;
 import static org.apache.jena.rdf.model.ModelFactory.createDefaultModel;
-import static org.apache.jena.riot.web.HttpOp.execHttpPostForm;
 import static org.openrdf.rio.RDFFormat.NTRIPLES;
 import static org.openrdf.rio.Rio.createParser;
 import static org.trippi.TripleMaker.createResource;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.sparql.engine.http.Params;
 import org.jrdf.graph.Node;
 import org.jrdf.graph.Triple;
 import org.junit.Test;
@@ -42,94 +40,88 @@ import com.asoroka.trippi.impl.sparql.SparqlConnector;
  */
 public class DirectIT extends IT {
 
-	private static final String ALL_TRIPLES = "CONSTRUCT { ?s ?p ?o } WHERE {?s ?p ?o.}";
+    /**
+     * The dataset to work with.
+     */
+    private static final String DATASET_NAME = "fedora3";
 
-	@Test
-	public void testNormalOperation() throws Exception {
+    private static final String ALL_TRIPLES = "CONSTRUCT { ?s ?p ?o } WHERE {?s ?p ?o.}";
 
-		final String fusekiUrl = "http://localhost:" + PORT + "/jena-fuseki-war/";
+    @Test
+    public void testNormalOperation() throws Exception {
 
-		// build a dataset to work with
-		final String datasetName = "testNormalOperation";
-		final Params params = new Params();
-		params.addParam("dbType", "mem");
-		params.addParam("dbName", datasetName);
-		execHttpPostForm(fusekiUrl + "$/datasets", params);
+        final String fusekiUrl = "http://localhost:" + PORT + "/jena-fuseki-war/";
 
-		// configure our SPARQL-based Trippi connector
-		final SparqlConnector sparqlConnector = new SparqlConnector();
-		final String datasetUrl = fusekiUrl + datasetName;
-		final Map<String, String> config = of("updateEndpoint", datasetUrl + "/update", "queryEndpoint",
-				datasetUrl + "/query");
-		sparqlConnector.setConfiguration(config);
+        // configure our SPARQL-based Trippi connector
+        final SparqlConnector sparqlConnector = new SparqlConnector();
+        final String datasetUrl = fusekiUrl + DATASET_NAME;
+        sparqlConnector.setConfiguration(of("updateEndpoint", datasetUrl + "/update", "queryEndpoint", datasetUrl +
+                "/query"));
 
-		// load some simple sample triples
-		final List<Triple> triples = new ArrayList<>();
-		final RDFParser parser = createParser(NTRIPLES);
-		final StatementCollector handler = new StatementCollector();
-		parser.setRDFHandler(handler);
-		try (Reader rdf = new StringReader(testData)) {
-			parser.parse(rdf, "");
-		}
-		for (final Statement s : handler.getStatements()) {
-			triples.add(createTriple(s.getSubject(), s.getPredicate(), s.getObject()));
-		}
+        // load some simple sample triples
+        final List<Triple> triples = new ArrayList<>();
+        final RDFParser parser = createParser(NTRIPLES);
+        final StatementCollector handler = new StatementCollector();
+        parser.setRDFHandler(handler);
+        try (Reader rdf = new StringReader(testData)) {
+            parser.parse(rdf, "");
+        }
+        for (final Statement s : handler.getStatements()) {
+            triples.add(createTriple(s.getSubject(), s.getPredicate(), s.getObject()));
+        }
 
-		final Model jenaStatements = createDefaultModel();
-		triples.stream().map(tripleConverter::convert).map(jenaStatements::asStatement).forEach(jenaStatements::add);
+        final Model jenaStatements = createDefaultModel();
+        triples.stream().map(tripleConverter::convert).map(jenaStatements::asStatement).forEach(jenaStatements::add);
 
-		// add them to our triplestore via our SPARQL Update connector
-		final TriplestoreWriter writer = sparqlConnector.getWriter();
-		// this is a SPARQL-only connector
-		assertArrayEquals(new String[] { "SPARQL" }, writer.listTripleLanguages());
-		assertArrayEquals(new String[] { "SPARQL" }, writer.listTupleLanguages());
-		final TriplestoreReader reader = sparqlConnector.getReader();
-		try {
-			reader.countTriples("itql", "", 0, false);
-			fail("This connector should not accept iTQL queries!");
-		} catch (final TrippiException e) {
-		}
+        // add them to our triplestore via our SPARQL Update connector
+        final TriplestoreWriter writer = sparqlConnector.getWriter();
+        // this is a SPARQL-only connector
+        assertArrayEquals(new String[] {"SPARQL"}, writer.listTripleLanguages());
+        assertArrayEquals(new String[] {"SPARQL"}, writer.listTupleLanguages());
+        final TriplestoreReader reader = sparqlConnector.getReader();
+        try {
+            reader.countTriples("itql", "", 0, false);
+            fail("This connector should not accept iTQL queries!");
+        } catch (final TrippiException e) {}
 
-		writer.add(triples, true);
+        writer.add(triples, true);
 
-		// check that they were all added
-		Model results = sparqlService(datasetUrl + "/query", ALL_TRIPLES).execConstruct();
-		assertTrue(results.containsAll(jenaStatements));
+        // check that they were all added
+        Model results = sparqlService(datasetUrl + "/query", ALL_TRIPLES).execConstruct();
+        assertTrue(results.containsAll(jenaStatements));
 
-		// check that we can query them via our connector
-		assertEquals(5, reader.countTriples(null, null, null, 0));
-		assertEquals(2, reader
-				.findTriples("sparql", "CONSTRUCT { <info:subject2> ?p ?o } WHERE { <info:subject2> ?p ?o }", 0, true)
-				.count());
-		assertEquals(1, reader.countTriples(createResource("info:subject1"), null, null, 0));
-		final TupleIterator tuples = reader.findTuples("sparql", "SELECT ?s WHERE {?s <info:predicate3> _:o }", 0,
-				false);
-		assertTrue(tuples.hasNext());
-		final Map<String, Node> solution = tuples.next();
-		assertFalse(tuples.hasNext());
-		assertEquals(1, solution.size());
-		assertTrue(solution.containsKey("s"));
-		assertTrue(solution.get("s").equals(createResource("info:subject3")));
+        // check that we can query them via our connector
+        assertEquals(1, reader.countTriples(createResource("info:subject4"), null, null, 0));
+        assertEquals(2, reader.findTriples("sparql",
+                "CONSTRUCT { <info:subject2> ?p ?o } WHERE { <info:subject2> ?p ?o }", 0, true).count());
+        assertEquals(1, reader.countTriples(createResource("info:subject1"), null, null, 0));
+        final TupleIterator tuples = reader.findTuples("sparql", "SELECT ?s WHERE {?s <info:predicate3> _:o }", 0,
+                false);
+        assertTrue(tuples.hasNext());
+        final Map<String, Node> solution = tuples.next();
+        assertFalse(tuples.hasNext());
+        assertEquals(1, solution.size());
+        assertTrue(solution.containsKey("s"));
+        assertTrue(solution.get("s").equals(createResource("info:subject3")));
 
-		// now delete them from our triplestore via our SPARQL Update connector
-		writer.delete(triples, true);
+        // now delete them from our triplestore via our SPARQL Update connector
+        writer.delete(triples, true);
 
-		// check that they were all removed
-		results = sparqlService(datasetUrl + "/query", ALL_TRIPLES).execConstruct();
-		assertFalse(results.containsAny(jenaStatements));
-		assertEquals(0, reader.countTriples(null, null, null, 0));
+        // check that they were all removed
+        results = sparqlService(datasetUrl + "/query", ALL_TRIPLES).execConstruct();
+        assertFalse(results.containsAny(jenaStatements));
 
-		sparqlConnector.close();
-	}
+        sparqlConnector.close();
+    }
 
-	/**
-	 * Note the absence of triples using blank nodes.
-	 * Fedora does not create or manage such triples, so this is reasonable test data.
-	 */
-	private static final String testData = "<info:subject1> <info:predicate1> <info:subject2> .\n"
-			+ "<info:subject2> <info:predicate2> \"1234\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n"
-			+ "<info:subject2> <info:predicate2> \"Chrysophylax\"^^<http://www.example.com/dives> .\n"
-			+ "<info:subject3>  <info:predicate3> \"Shalom!\"@he .\n"
-			+ "<info:subject4>  <info:predicate4> \"Oingoboingo\" .\n";
+    /**
+     * Note the absence of triples using blank nodes.
+     * Fedora does not create or manage such triples, so this is reasonable test data.
+     */
+    private static final String testData = "<info:subject1> <info:predicate1> <info:subject2> .\n" +
+            "<info:subject2> <info:predicate2> \"1234\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n" +
+            "<info:subject2> <info:predicate2> \"Chrysophylax\"^^<http://www.example.com/dives> .\n" +
+            "<info:subject3>  <info:predicate3> \"Shalom!\"@he .\n" +
+            "<info:subject4>  <info:predicate4> \"Oingoboingo\" .\n";
 
 }

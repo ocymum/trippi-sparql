@@ -47,7 +47,7 @@ import org.trippi.io.SimpleTripleIterator;
  */
 public class SparqlSession implements TriplestoreSession {
 
-	private static final Logger log = getLogger(SparqlSession.class.getName());
+	private static final Logger log = getLogger(SparqlSession.class);
 
 	/**
 	 * The service against which to execute SPARQL Update requests.
