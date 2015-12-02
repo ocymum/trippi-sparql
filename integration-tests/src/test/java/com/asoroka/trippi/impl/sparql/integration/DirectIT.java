@@ -11,7 +11,8 @@ import static org.openrdf.rio.Rio.createParser;
 import static org.trippi.TripleMaker.createResource;
 import static org.trippi.impl.RDFFactories.createTriple;
 
-import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +35,8 @@ import com.asoroka.trippi.impl.sparql.SparqlConnector;
 /**
  * This integration test expects to find a Fuseki endpoint running at a port as
  * defined below and under the webapp name defined below. This is handled by
- * Maven in the course of a normal build, but to run this test inside an
- * IDE, it will be necessary to manually start a webapp to perform that role.
+ * Maven in the course of a normal build, but to run this test inside an IDE, it
+ * will be necessary to manually start a webapp to perform that role.
  *
  * @author A. Soroka
  */
@@ -58,8 +59,8 @@ public class DirectIT extends IT {
 		// configure our SPARQL-based Trippi connector
 		final SparqlConnector sparqlConnector = new SparqlConnector();
 		final String datasetUrl = fusekiUrl + datasetName;
-		final Map<String, String> config = of("updateEndpoint", datasetUrl + "/update", "queryEndpoint", datasetUrl +
-				"/query");
+		final Map<String, String> config = of("updateEndpoint", datasetUrl + "/update", "queryEndpoint",
+				datasetUrl + "/query");
 		sparqlConnector.setConfiguration(config);
 
 		// load some simple sample triples
@@ -67,7 +68,7 @@ public class DirectIT extends IT {
 		final RDFParser parser = createParser(NTRIPLES);
 		final StatementCollector handler = new StatementCollector();
 		parser.setRDFHandler(handler);
-		try (InputStream rdf = getClass().getResourceAsStream("/normaltestdata.nt")) {
+		try (Reader rdf = new StringReader(testData)) {
 			parser.parse(rdf, "");
 		}
 		for (final Statement s : handler.getStatements()) {
@@ -80,13 +81,14 @@ public class DirectIT extends IT {
 		// add them to our triplestore via our SPARQL Update connector
 		final TriplestoreWriter writer = sparqlConnector.getWriter();
 		// this is a SPARQL-only connector
-		assertArrayEquals(new String[] {"SPARQL"}, writer.listTripleLanguages());
-		assertArrayEquals(new String[] {"SPARQL"}, writer.listTupleLanguages());
+		assertArrayEquals(new String[] { "SPARQL" }, writer.listTripleLanguages());
+		assertArrayEquals(new String[] { "SPARQL" }, writer.listTupleLanguages());
 		final TriplestoreReader reader = sparqlConnector.getReader();
 		try {
 			reader.countTriples("itql", "", 0, false);
 			fail("This connector should not accept iTQL queries!");
-		} catch (final TrippiException e) {}
+		} catch (final TrippiException e) {
+		}
 
 		writer.add(triples, true);
 
@@ -96,8 +98,9 @@ public class DirectIT extends IT {
 
 		// check that we can query them via our connector
 		assertEquals(5, reader.countTriples(null, null, null, 0));
-		assertEquals(2, reader.findTriples("sparql",
-				"CONSTRUCT { <info:subject2> ?p ?o } WHERE { <info:subject2> ?p ?o }", 0, true).count());
+		assertEquals(2, reader
+				.findTriples("sparql", "CONSTRUCT { <info:subject2> ?p ?o } WHERE { <info:subject2> ?p ?o }", 0, true)
+				.count());
 		assertEquals(1, reader.countTriples(createResource("info:subject1"), null, null, 0));
 		final TupleIterator tuples = reader.findTuples("sparql", "SELECT ?s WHERE {?s <info:predicate3> _:o }", 0,
 				false);
@@ -118,4 +121,15 @@ public class DirectIT extends IT {
 
 		sparqlConnector.close();
 	}
+
+	/**
+	 * Note the absence of triples using blank nodes.
+	 * Fedora does not create or manage such triples, so this is reasonable test data.
+	 */
+	private static final String testData = "<info:subject1> <info:predicate1> <info:subject2> .\n"
+			+ "<info:subject2> <info:predicate2> \"1234\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n"
+			+ "<info:subject2> <info:predicate2> \"Chrysophylax\"^^<http://www.example.com/dives> .\n"
+			+ "<info:subject3>  <info:predicate3> \"Shalom!\"@he .\n"
+			+ "<info:subject4>  <info:predicate4> \"Oingoboingo\" .\n";
+
 }

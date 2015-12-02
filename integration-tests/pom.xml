@@ -55,10 +55,6 @@
 				<directory>${basedir}/src/test/resources/fedora-home</directory>
 				<targetPath>${fedora.home}</targetPath>
 			</testResource>
-			<testResource>
-				<directory>${basedir}/src/test/resources/testdata</directory>
-				<targetPath>${project.build.directory}/test-classes</targetPath>
-			</testResource>
 		</testResources>
 		<plugins>
 			<plugin>
