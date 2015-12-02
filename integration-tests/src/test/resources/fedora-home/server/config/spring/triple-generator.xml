@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:context="http://www.springframework.org/schema/context"
+      xsi:schemaLocation="http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+      <bean id="org.trippi.io.TripleIteratorFactory" class="org.trippi.io.TripleIteratorFactory"
+            factory-method="defaultInstance" destroy-method="shutdown"/>
+      <bean id="Object-3.0" class="org.fcrepo.server.resourceIndex.FedoraObjectTripleGenerator_3_0"
+            scope="prototype"> </bean>
+      <bean id="ContentModel-3.0"
+            class="org.fcrepo.server.resourceIndex.ContentModelTripleGenerator_3_0"
+            scope="prototype"> </bean>
+      <bean id="ServiceDefinition-3.0"
+            class="org.fcrepo.server.resourceIndex.ServiceDefinitionTripleGenerator_3_0"
+            scope="prototype"> </bean>
+      <bean id="ServiceDeployment-3.0"
+            class="org.fcrepo.server.resourceIndex.ServiceDeploymentTripleGenerator"
+            scope="prototype"> </bean>
+
+      <bean id="mods-extractor" class="edu.virginia.lib.fedora.XsltDsTripleGenerator">
+            <property name="datastreamId" value="descMetadata"/>
+            <property name="xsltInputStreamSource">
+                  <bean class="org.springframework.core.io.ClassPathResource">
+                        <constructor-arg type="String"
+                              value="edu/virginia/lib/fedora/sample_xslt/mods2rdf.xsl"/>
+                  </bean>
+            </property>
+      </bean>
+
+      <bean id="vra-extractor" class="edu.virginia.lib.fedora.XsltDsTripleGenerator">
+            <property name="datastreamId" value="descMetadata"/>
+            <property name="xsltInputStreamSource">
+                  <bean class="org.springframework.core.io.ClassPathResource">
+                        <constructor-arg type="String"
+                              value="edu/virginia/lib/fedora/sample_xslt/vra2rdf.xsl"/>
+                  </bean>
+            </property>
+      </bean>
+      
+      <bean id="mix-extractor" class="edu.virginia.lib.fedora.XsltDsTripleGenerator">
+            <property name="datastreamId" value="techMetadata"/>
+            <property name="xsltInputStreamSource">
+                  <bean class="org.springframework.core.io.ClassPathResource">
+                        <constructor-arg type="String"
+                              value="edu/virginia/lib/fedora/sample_xslt/mix2rdf.xsl"/>
+                  </bean>
+            </property>
+      </bean>
+
+
+      <bean id="org.fcrepo.server.resourceIndex.TripleGenerator"
+            class="org.fcrepo.server.resourceIndex.ModelBasedTripleGenerator" scope="prototype">
+            <property name="tripleGenerators">
+                  <map>
+                        <entry key="info:fedora/fedora-system:FedoraObject-3.0"
+                              value-ref="Object-3.0"/>
+                        <entry key="info:fedora/fedora-system:ContentModel-3.0"
+                              value-ref="ContentModel-3.0"/>
+                        <entry key="info:fedora/fedora-system:ServiceDefinition-3.0"
+                              value-ref="ServiceDefinition-3.0"/>
+                        <entry key="info:fedora/fedora-system:ServiceDeployment-3.0"
+                              value-ref="ServiceDeployment-3.0"/>
+
+                        <entry key="info:fedora/test:hasMODS" value-ref="mods-extractor"/>
+                        <entry key="info:fedora/test:hasVRA" value-ref="vra-extractor"/>
+                        <entry key="info:fedora/test:hasMIX" value-ref="mix-extractor"/>
+                  </map>
+            </property>
+      </bean>
+</beans>

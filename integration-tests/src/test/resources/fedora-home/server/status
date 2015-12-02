@@ -1,0 +1,612 @@
+[STATUS]
+Starting
+2012-10-04 15:14:22PM EDT
+Initializing Server
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 15:14:22PM EDT
+Fedora Version: 3.6.2-SNAPSHOT
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 15:14:22PM EDT
+Fedora Build Date: 2012-09-25 09:19:02 UTC-0400
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 15:14:22PM EDT
+Server Host Name: localhost
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 15:14:22PM EDT
+Server Port: 8080
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 15:14:22PM EDT
+Initializing datastore definitions
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 15:14:22PM EDT
+Loading Module Definitions
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 15:14:22PM EDT
+Initializing Modules
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 15:15:44PM EDT
+Initializing Server
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 15:15:44PM EDT
+Fedora Version: 3.6.2-SNAPSHOT
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 15:15:44PM EDT
+Fedora Build Date: 2012-09-25 09:19:02 UTC-0400
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 15:15:44PM EDT
+Server Host Name: localhost
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 15:15:44PM EDT
+Server Port: 8080
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 15:15:44PM EDT
+Initializing datastore definitions
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 15:15:44PM EDT
+Loading Module Definitions
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 15:15:44PM EDT
+Initializing Modules
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:02:27PM EDT
+Initializing Server
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:02:27PM EDT
+Fedora Version: 3.6.2-SNAPSHOT
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:02:27PM EDT
+Fedora Build Date: 2012-09-25 09:19:02 UTC-0400
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:02:28PM EDT
+Server Host Name: localhost
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:02:28PM EDT
+Server Port: 8080
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:02:28PM EDT
+Initializing datastore definitions
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:02:28PM EDT
+Loading Module Definitions
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:02:28PM EDT
+Initializing Modules
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:15:31PM EDT
+Initializing Server
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:15:31PM EDT
+Fedora Version: 3.6.2-SNAPSHOT
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:15:31PM EDT
+Fedora Build Date: 2012-09-25 09:19:02 UTC-0400
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:15:31PM EDT
+Server Host Name: localhost
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:15:31PM EDT
+Server Port: 8080
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:15:31PM EDT
+Initializing datastore definitions
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:15:31PM EDT
+Loading Module Definitions
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:15:31PM EDT
+Initializing Modules
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:15:32PM EDT
+Initializing Triplestore
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:15:33PM EDT
+Post-Initializing Modules
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:15:33PM EDT
+Initializing XACML Authorization Module
+[/STATUS]
+
+[STATUS]
+Stopping
+2012-10-04 16:18:55PM EDT
+Shutting down Fedora Server and modules
+[/STATUS]
+
+[STATUS]
+Stopped
+2012-10-04 16:18:55PM EDT
+Shutdown Successful
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:19:28PM EDT
+Initializing Server
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:19:28PM EDT
+Fedora Version: 3.6.2-SNAPSHOT
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:19:28PM EDT
+Fedora Build Date: 2012-09-25 09:19:02 UTC-0400
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:19:28PM EDT
+Server Host Name: localhost
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:19:28PM EDT
+Server Port: 8080
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:19:28PM EDT
+Initializing datastore definitions
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:19:28PM EDT
+Loading Module Definitions
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:19:28PM EDT
+Initializing Modules
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:19:29PM EDT
+Initializing Triplestore
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:19:30PM EDT
+Post-Initializing Modules
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:19:30PM EDT
+Initializing XACML Authorization Module
+[/STATUS]
+
+[STATUS]
+Stopping
+2012-10-04 16:28:35PM EDT
+Shutting down Fedora Server and modules
+[/STATUS]
+
+[STATUS]
+Stopped
+2012-10-04 16:28:35PM EDT
+Shutdown Successful
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:31:36PM EDT
+Initializing Server
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:31:36PM EDT
+Fedora Version: 3.6.2-SNAPSHOT
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:31:36PM EDT
+Fedora Build Date: 2012-09-25 09:19:02 UTC-0400
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:31:36PM EDT
+Server Host Name: localhost
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:31:36PM EDT
+Server Port: 8080
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:31:36PM EDT
+Initializing datastore definitions
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:31:36PM EDT
+Loading Module Definitions
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:31:36PM EDT
+Initializing Modules
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:31:37PM EDT
+Initializing Triplestore
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:31:38PM EDT
+Post-Initializing Modules
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:31:38PM EDT
+Initializing XACML Authorization Module
+[/STATUS]
+
+[STATUS]
+Stopping
+2012-10-04 16:33:15PM EDT
+Shutting down Fedora Server and modules
+[/STATUS]
+
+[STATUS]
+Stopped
+2012-10-04 16:33:15PM EDT
+Shutdown Successful
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:33:30PM EDT
+Initializing Server
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:33:30PM EDT
+Fedora Version: 3.6.2-SNAPSHOT
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:33:30PM EDT
+Fedora Build Date: 2012-09-25 09:19:02 UTC-0400
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:33:30PM EDT
+Server Host Name: localhost
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:33:30PM EDT
+Server Port: 8080
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:33:30PM EDT
+Initializing datastore definitions
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:33:30PM EDT
+Loading Module Definitions
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:33:30PM EDT
+Initializing Modules
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:33:31PM EDT
+Initializing Triplestore
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:33:33PM EDT
+Post-Initializing Modules
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:33:33PM EDT
+Initializing XACML Authorization Module
+[/STATUS]
+
+[STATUS]
+Stopping
+2012-10-04 16:34:41PM EDT
+Shutting down Fedora Server and modules
+[/STATUS]
+
+[STATUS]
+Stopped
+2012-10-04 16:34:41PM EDT
+Shutdown Successful
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:34:45PM EDT
+Initializing Server
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:34:45PM EDT
+Fedora Version: 3.6.2-SNAPSHOT
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:34:45PM EDT
+Fedora Build Date: 2012-09-25 09:19:02 UTC-0400
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:34:45PM EDT
+Server Host Name: localhost
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:34:45PM EDT
+Server Port: 8080
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:34:45PM EDT
+Initializing datastore definitions
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:34:45PM EDT
+Loading Module Definitions
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:34:45PM EDT
+Initializing Modules
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:34:46PM EDT
+Initializing Triplestore
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:34:47PM EDT
+Post-Initializing Modules
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:34:47PM EDT
+Initializing XACML Authorization Module
+[/STATUS]
+
+[STATUS]
+Stopping
+2012-10-04 16:35:16PM EDT
+Shutting down Fedora Server and modules
+[/STATUS]
+
+[STATUS]
+Stopped
+2012-10-04 16:35:16PM EDT
+Shutdown Successful
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:35:32PM EDT
+Initializing Server
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:35:32PM EDT
+Fedora Version: 3.6.2-SNAPSHOT
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:35:32PM EDT
+Fedora Build Date: 2012-09-25 09:19:02 UTC-0400
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:35:32PM EDT
+Server Host Name: localhost
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:35:32PM EDT
+Server Port: 8080
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:35:32PM EDT
+Initializing datastore definitions
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:35:32PM EDT
+Loading Module Definitions
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:35:32PM EDT
+Initializing Modules
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:35:33PM EDT
+Initializing Triplestore
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:35:34PM EDT
+Post-Initializing Modules
+[/STATUS]
+
+[STATUS]
+Starting
+2012-10-04 16:35:34PM EDT
+Initializing XACML Authorization Module
+[/STATUS]
+
+[STATUS]
+Stopping
+2012-10-04 17:10:39PM EDT
+Shutting down Fedora Server and modules
+[/STATUS]
+
+[STATUS]
+Stopped
+2012-10-04 17:10:39PM EDT
+Shutdown Successful
+[/STATUS]
+
