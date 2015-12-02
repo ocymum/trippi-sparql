@@ -10,7 +10,7 @@
     <logger name="com.asoroka.trippi.impl" additivity="false" level="${testLogLevel:DEBUG}">
         <appender-ref ref="STDOUT"/>
     </logger>
-    <root additivity="false" level="INFO">
+    <root additivity="false" level="WARN">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

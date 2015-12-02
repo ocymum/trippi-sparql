@@ -109,7 +109,9 @@
 					</container>
 					<configuration>
 						<properties>
-							<cargo.logging>high</cargo.logging>
+							<cargo.servlet.uriencoding>UTF-8</cargo.servlet.uriencoding>
+							<cargo.jvmargs>-Xmx512m</cargo.jvmargs>
+							<cargo.logging>low</cargo.logging>
 							<cargo.servlet.port>${dynamic.test.port}</cargo.servlet.port>
 						</properties>
 					</configuration>
