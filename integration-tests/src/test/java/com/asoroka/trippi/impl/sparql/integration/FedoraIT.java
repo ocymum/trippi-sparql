@@ -5,6 +5,7 @@ import static java.net.URLEncoder.encode;
 import static java.util.Arrays.asList;
 import static org.apache.jena.riot.Lang.NTRIPLES;
 import static org.apache.jena.riot.RDFDataMgr.loadModel;
+import static org.apache.jena.riot.web.HttpOp.execHttpDelete;
 import static org.apache.jena.riot.web.HttpOp.execHttpPost;
 
 import java.io.UnsupportedEncodingException;
@@ -51,17 +52,20 @@ public class FedoraIT extends IT {
     }
 
     @Test
-    public void addAnObject() {
+    public void addAndRemoveAnObject() {
         // create an object
         execHttpPost(FEDORA_URI + "/objects/test:1", "text/xml", "");
         final String testObjectName = "<info:fedora/test:1>";
         // find some triples for it
-        final Model triples = triplesForObjectName(testObjectName);
+        Model triples = triplesForObjectName(testObjectName);
         final Resource subject = triples.createResource(testObjectName);
         final Property ownerId = triples.createProperty("<info:fedora/fedora-system:def/model#ownerId>");
         final Literal fedoraAdmin = triples.createLiteral(REPOSITORY_ADMINISTRATOR_NAME);
         triples.listStatements(subject, ownerId, (RDFNode) null).mapWith(Statement::getObject).forEachRemaining(
                         o -> assertEquals(fedoraAdmin, o));
+        execHttpDelete(FEDORA_URI + "/objects/test:1");
+        triples = triplesForObjectName(testObjectName);
+        assertTrue(triples.isEmpty());
     }
 
     private static Model triplesForObjectName(final String name) {
