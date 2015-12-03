@@ -166,7 +166,7 @@ public class SparqlSession implements TriplestoreSession {
 	 * @throws TrippiException
 	 */
 	private static void checkLang(final String lang) throws TrippiException {
-		if (!lang.toLowerCase().equals("sparql")) throw new TrippiException("This Trippi connector uses only SPARQL!",
+		if (!lang.toLowerCase().contains("sparql")) throw new TrippiException("This Trippi connector uses only SPARQL!",
 				new UnsupportedOperationException("This Trippi connector uses only SPARQL!"));
 	}
 
