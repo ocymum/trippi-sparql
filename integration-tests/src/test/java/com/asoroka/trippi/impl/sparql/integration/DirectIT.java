@@ -31,10 +31,10 @@ import org.trippi.TupleIterator;
 import com.asoroka.trippi.impl.sparql.SparqlConnector;
 
 /**
- * This integration test expects to find a Fuseki endpoint running at a port as
- * defined below and under the webapp name defined below. This is handled by
- * Maven in the course of a normal build, but to run this test inside an IDE, it
- * will be necessary to manually start a webapp to perform that role.
+ * Tests of interaction directly between this Trippi implementation and a SPARQL endpoint. (Eliding Fedora.)
+ * This integration test expects to find a Fuseki endpoint running at a port as defined below and under the webapp name
+ * defined below. This is handled by Maven in the course of a normal build, but to run this test inside an IDE, it will
+ * be necessary to manually start a webapp to perform that role.
  *
  * @author A. Soroka
  */
