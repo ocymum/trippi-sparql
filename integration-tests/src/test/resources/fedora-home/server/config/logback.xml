@@ -20,7 +20,7 @@
       <MaxFileSize>20MB</MaxFileSize>
     </triggeringPolicy>
   </appender>
-  <logger name="org.fcrepo" additivity="false" level="WARN">
+  <logger name="org.fcrepo" additivity="false" level="INFO">
     <appender-ref ref="FEDORA"/>
     <appender-ref ref="STDOUT"/>
   </logger>

@@ -29,8 +29,8 @@ public class FedoraIT extends IT {
     private static final String RI_URI = FEDORA_URI + "/risearch";
 
     final List<String> SYSTEM_OBJECT_NAMES = asList("<info:fedora/fedora-system:ServiceDeployment-3.0>",
-            "<info:fedora/fedora-system:ServiceDefinition-3.0>", "<info:fedora/fedora-system:FedoraObject-3.0>",
-            "<info:fedora/fedora-system:ContentModel-3.0>");
+                    "<info:fedora/fedora-system:ServiceDefinition-3.0>", "<info:fedora/fedora-system:FedoraObject-3.0>",
+                    "<info:fedora/fedora-system:ContentModel-3.0>");
 
     private static final Logger log = LoggerFactory.getLogger(FedoraIT.class);
 
@@ -46,20 +46,22 @@ public class FedoraIT extends IT {
             final Property ownerId = triples.createProperty("<info:fedora/fedora-system:def/model#ownerId>");
             final Literal fedoraAdmin = triples.createLiteral(REPOSITORY_ADMINISTRATOR_NAME);
             triples.listStatements(subject, ownerId, (RDFNode) null).mapWith(Statement::getObject).forEachRemaining(
-                    o -> assertEquals(fedoraAdmin, o));
+                            o -> assertEquals(fedoraAdmin, o));
         }
     }
 
     @Test
     public void addAnObject() {
+        // create an object
         execHttpPost(FEDORA_URI + "/objects/test:1", "text/xml", "");
         final String testObjectName = "<info:fedora/test:1>";
+        // find some triples for it
         final Model triples = triplesForObjectName(testObjectName);
         final Resource subject = triples.createResource(testObjectName);
         final Property ownerId = triples.createProperty("<info:fedora/fedora-system:def/model#ownerId>");
         final Literal fedoraAdmin = triples.createLiteral(REPOSITORY_ADMINISTRATOR_NAME);
         triples.listStatements(subject, ownerId, (RDFNode) null).mapWith(Statement::getObject).forEachRemaining(
-                o -> assertEquals(fedoraAdmin, o));
+                        o -> assertEquals(fedoraAdmin, o));
     }
 
     private static Model triplesForObjectName(final String name) {

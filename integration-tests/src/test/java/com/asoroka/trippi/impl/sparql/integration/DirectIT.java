@@ -56,7 +56,7 @@ public class DirectIT extends IT {
         final SparqlConnector sparqlConnector = new SparqlConnector();
         final String datasetUrl = fusekiUrl + DATASET_NAME;
         sparqlConnector.setConfiguration(of("updateEndpoint", datasetUrl + "/update", "queryEndpoint", datasetUrl +
-                "/query"));
+                        "/query"));
 
         // load some simple sample triples
         final List<Triple> triples = new ArrayList<>();
@@ -82,7 +82,7 @@ public class DirectIT extends IT {
         try {
             reader.countTriples("itql", "", 0, false);
             fail("This connector should not accept iTQL queries!");
-        } catch (final TrippiException e) {}
+        } catch (final TrippiException e) {/** Expected. **/}
 
         writer.add(triples, true);
 
@@ -93,10 +93,10 @@ public class DirectIT extends IT {
         // check that we can query them via our connector
         assertEquals(1, reader.countTriples(createResource("info:subject4"), null, null, 0));
         assertEquals(2, reader.findTriples("sparql",
-                "CONSTRUCT { <info:subject2> ?p ?o } WHERE { <info:subject2> ?p ?o }", 0, true).count());
+                        "CONSTRUCT { <info:subject2> ?p ?o } WHERE { <info:subject2> ?p ?o }", 0, true).count());
         assertEquals(1, reader.countTriples(createResource("info:subject1"), null, null, 0));
         final TupleIterator tuples = reader.findTuples("sparql", "SELECT ?s WHERE {?s <info:predicate3> _:o }", 0,
-                false);
+                        false);
         assertTrue(tuples.hasNext());
         final Map<String, Node> solution = tuples.next();
         assertFalse(tuples.hasNext());
@@ -119,9 +119,9 @@ public class DirectIT extends IT {
      * Fedora does not create or manage such triples, so this is reasonable test data.
      */
     private static final String testData = "<info:subject1> <info:predicate1> <info:subject2> .\n" +
-            "<info:subject2> <info:predicate2> \"1234\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n" +
-            "<info:subject2> <info:predicate2> \"Chrysophylax\"^^<http://www.example.com/dives> .\n" +
-            "<info:subject3>  <info:predicate3> \"Shalom!\"@he .\n" +
-            "<info:subject4>  <info:predicate4> \"Oingoboingo\" .\n";
+                    "<info:subject2> <info:predicate2> \"1234\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n" +
+                    "<info:subject2> <info:predicate2> \"Chrysophylax\"^^<http://www.example.com/dives> .\n" +
+                    "<info:subject3>  <info:predicate3> \"Shalom!\"@he .\n" +
+                    "<info:subject4>  <info:predicate4> \"Oingoboingo\" .\n";
 
 }
