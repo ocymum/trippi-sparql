@@ -47,138 +47,135 @@ import org.trippi.io.SimpleTripleIterator;
  */
 public class SparqlSession implements TriplestoreSession {
 
-	private static final Logger log = getLogger(SparqlSession.class);
+    private static final Logger log = getLogger(SparqlSession.class);
 
-	/**
-	 * The service against which to execute SPARQL Update requests.
-	 */
-	private final Consumer<UpdateRequest> updateExecutor;
+    /**
+     * The service against which to execute SPARQL Update requests.
+     */
+    private final Consumer<UpdateRequest> updateExecutor;
 
-	/**
-	 * The service against which to execute SPARQL Query requests, exceptCONSTRUCT requests.
-	 */
-	private final Function<Query, ResultSet> queryExecutor;
+    /**
+     * The service against which to execute SPARQL Query requests, exceptCONSTRUCT requests.
+     */
+    private final Function<Query, ResultSet> queryExecutor;
 
-	/**
-	 * The service against which to execute SPARQL Query CONSTRUCTrequests.
-	 */
-	private final Function<Query, Model> constructExecutor;
+    /**
+     * The service against which to execute SPARQL Query CONSTRUCTrequests.
+     */
+    private final Function<Query, Model> constructExecutor;
 
-	/**
-	 * Default constructor.
-	 *
-	 * @param updateExecutor the service against which to execute SPARQL Update requests
-	 * @param queryExecutor the service against which to execute SPARQL Query non-CONSTRUCT requests
-	 * @param constructExecutor the service against which to execute SPARQL Query CONSTRUCT requests
-	 */
-	public SparqlSession(final Consumer<UpdateRequest> updateExecutor, final Function<Query, ResultSet> queryExecutor,
-			final Function<Query, Model> constructExecutor) {
-		this.updateExecutor = updateExecutor;
-		this.queryExecutor = queryExecutor;
-		this.constructExecutor = constructExecutor;
-	}
+    /**
+     * Default constructor.
+     *
+     * @param updateExecutor the service against which to execute SPARQL Update requests
+     * @param queryExecutor the service against which to execute SPARQL Query non-CONSTRUCT requests
+     * @param constructExecutor the service against which to execute SPARQL Query CONSTRUCT requests
+     */
+    public SparqlSession(final Consumer<UpdateRequest> updateExecutor, final Function<Query, ResultSet> queryExecutor,
+                    final Function<Query, Model> constructExecutor) {
+        this.updateExecutor = updateExecutor;
+        this.queryExecutor = queryExecutor;
+        this.constructExecutor = constructExecutor;
+    }
 
-	@Override
-	public void add(final Set<org.jrdf.graph.Triple> triples) {
-		log.debug("Adding triples: {}", triples);
-		mutate(triples, INSERT);
-	}
+    @Override
+    public void add(final Set<org.jrdf.graph.Triple> triples) {
+        log.debug("Adding triples: {}", triples);
+        mutate(triples, INSERT);
+    }
 
-	@Override
-	public void delete(final Set<org.jrdf.graph.Triple> triples) {
-		log.debug("Deleting triples: {}", triples);
-		mutate(triples, DELETE);
-	}
+    @Override
+    public void delete(final Set<org.jrdf.graph.Triple> triples) {
+        log.debug("Deleting triples: {}", triples);
+        mutate(triples, DELETE);
+    }
 
-	/**
-	 * Perform a mutating operation against {@link #updateExecutor} using SPARQL
-	 * Update.
-	 *
-	 * @param triples the triples with which to perform the operation
-	 * @param operation the type of mutating operation to perform
-	 */
-	private void mutate(final Set<org.jrdf.graph.Triple> triples, final Operation operation) {
-		final Iterable<Triple> trips = from(triples).transform(tripleConverter::convert);
-		final UpdateRequest request = UpdateFactory.create(operation + " { " + datablock(trips) + " } WHERE {}");
-		updateExecutor.accept(request);
-	}
+    /**
+     * Perform a mutating operation against {@link #updateExecutor} using SPARQL Update.
+     *
+     * @param triples the triples with which to perform the operation
+     * @param operation the type of mutating operation to perform
+     */
+    private void mutate(final Set<org.jrdf.graph.Triple> triples, final Operation operation) {
+        final Iterable<Triple> trips = from(triples).transform(tripleConverter::convert);
+        final UpdateRequest request = UpdateFactory.create(operation + " { " + datablock(trips) + " } WHERE {}");
+        updateExecutor.accept(request);
+    }
 
-	/**
-	 * The various operations that can be performed against a triplestore via
-	 * SPARQL Update.
-	 */
-	public static enum Operation {
-		INSERT, DELETE
-	}
+    /**
+     * The various operations that can be performed against a triplestore via SPARQL Update.
+     */
+    public static enum Operation {
+        INSERT, DELETE
+    }
 
-	/**
-	 * Creates serialized RDF appropriate for use in a SPARQL Update request.
-	 *
-	 * @param triples the RDF to serialize
-	 * @return a block of serialized RDF
-	 */
-	private static String datablock(final Iterable<Triple> triples) {
-		try (final StringWriter w = new StringWriter()) {
-			write(w, triples.iterator());
-			return w.toString();
-		} catch (final IOException e) {
-			throw new AssertionError(e);
-		}
-	}
+    /**
+     * Creates serialized RDF appropriate for use in a SPARQL Update request.
+     *
+     * @param triples the RDF to serialize
+     * @return a block of serialized RDF
+     */
+    private static String datablock(final Iterable<Triple> triples) {
+        try (final StringWriter w = new StringWriter()) {
+            write(w, triples.iterator());
+            return w.toString();
+        } catch (final IOException e) {
+            throw new AssertionError(e);
+        }
+    }
 
-	@Override
-	public String[] listTupleLanguages() {
-		return LANGUAGES;
-	}
+    @Override
+    public String[] listTupleLanguages() {
+        return LANGUAGES;
+    }
 
-	@Override
-	public String[] listTripleLanguages() {
-		return LANGUAGES;
-	}
+    @Override
+    public String[] listTripleLanguages() {
+        return LANGUAGES;
+    }
 
-	@Override
-	public void close() {
-		// NO OP
-	}
+    @Override
+    public void close() {
+        // NO OP
+    }
 
-	@Override
-	public TupleIterator query(final String queryText, final String lang) throws TrippiException {
-		checkLang(lang);
-		final Query query = QueryFactory.create(queryText);
-		return new ResultSetTupleIterator(queryExecutor.apply(query));
-	}
+    @Override
+    public TupleIterator query(final String queryText, final String lang) throws TrippiException {
+        checkLang(lang);
+        final Query query = QueryFactory.create(queryText);
+        return new ResultSetTupleIterator(queryExecutor.apply(query));
+    }
 
-	@Override
-	public TripleIterator findTriples(final String lang, final String queryText) throws TrippiException {
-		checkLang(lang);
-		final Query query = QueryFactory.create(queryText);
-		final Model answer = constructExecutor.apply(query);
-		final Set<org.jrdf.graph.Triple> triples = answer.listStatements().mapWith(Statement::asTriple).mapWith(
-				tripleConverter.reverse()::convert).toSet();
-		final DefaultAliasManager aliases = new DefaultAliasManager(answer.getNsPrefixMap());
-		return new SimpleTripleIterator(triples, aliases);
-	}
+    @Override
+    public TripleIterator findTriples(final String lang, final String queryText) throws TrippiException {
+        checkLang(lang);
+        final Query query = QueryFactory.create(queryText);
+        final Model answer = constructExecutor.apply(query);
+        final Set<org.jrdf.graph.Triple> triples = answer.listStatements().mapWith(Statement::asTriple).mapWith(
+                        tripleConverter.reverse()::convert).toSet();
+        final DefaultAliasManager aliases = new DefaultAliasManager(answer.getNsPrefixMap());
+        return new SimpleTripleIterator(triples, aliases);
+    }
 
-	/**
-	 * This connector uses only SPARQL.
-	 *
-	 * @param lang the language of a query
-	 * @throws TrippiException
-	 */
-	private static void checkLang(final String lang) throws TrippiException {
-		if (!lang.toLowerCase().contains("sparql")) throw new TrippiException("This Trippi connector uses only SPARQL!",
-				new UnsupportedOperationException("This Trippi connector uses only SPARQL!"));
-	}
+    /**
+     * This connector uses only SPARQL.
+     *
+     * @param lang the language of a query
+     * @throws TrippiException
+     */
+    private static void checkLang(final String lang) throws TrippiException {
+        if (!lang.toLowerCase().contains("sparql")) throw new TrippiException("This Trippi connector uses only SPARQL!",
+                        new UnsupportedOperationException("This Trippi connector uses only SPARQL!"));
+    }
 
-	@Override
-	public TripleIterator findTriples(final SubjectNode s, final PredicateNode p, final ObjectNode o)
-			throws TrippiException {
-		final String subj = stringForNode(s == null ? new Node_Variable("s") : subjectConverter.convert(s));
-		final String pred = stringForNode(p == null ? new Node_Variable("p") : predicateConverter.convert(p));
-		final String obj = stringForNode(o == null ? new Node_Variable("o") : objectConverter.convert(o));
+    @Override
+    public TripleIterator findTriples(final SubjectNode subj, final PredicateNode pred, final ObjectNode obj)
+                    throws TrippiException {
+        final String s = stringForNode(subj == null ? new Node_Variable("s") : subjectConverter.convert(subj));
+        final String p = stringForNode(pred == null ? new Node_Variable("p") : predicateConverter.convert(pred));
+        final String o = stringForNode(obj == null ? new Node_Variable("o") : objectConverter.convert(obj));
 
-		final String queryText = "CONSTRUCT { " + subj + " " + pred + " " + obj + " } WHERE { " + subj + " " + pred +
-				" " + obj + " }";
-		return findTriples("sparql", queryText);
-	}
+        final String queryText = "CONSTRUCT WHERE { " + s + " " + p + " " + o + " }";
+        return findTriples("sparql", queryText);
+    }
 }
