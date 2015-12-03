@@ -2,6 +2,7 @@
 package com.asoroka.trippi.impl.sparql;
 
 import static java.util.Arrays.asList;
+import static org.apache.jena.rdf.model.ResourceFactory.createPlainLiteral;
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 
 import java.util.Iterator;
@@ -11,6 +12,7 @@ import java.util.Map;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.sparql.engine.binding.Binding;
@@ -25,8 +27,13 @@ public class ResultSetTupleIteratorTest extends Assert {
     public void test() throws TrippiException {
 
         final QuerySolutionMap q1 = new QuerySolutionMap();
-        final Resource solutionNode = createResource("info:test");
-        q1.add("name", solutionNode);
+        final Resource solutionNode1 = createResource("info:test");
+        final Literal solutionNode2 = createPlainLiteral("Fomalhaut");
+        final Resource solutionNode3 = createResource();
+        q1.add("name", solutionNode1);
+        q1.add("rank", solutionNode2);
+        q1.add("serialNumber", solutionNode3);
+
         final QuerySolution q2 = new QuerySolutionMap();
         final QuerySolution q3 = new QuerySolutionMap();
         final QuerySolution q4 = new QuerySolutionMap();
@@ -59,7 +66,12 @@ public class ResultSetTupleIteratorTest extends Assert {
         assertEquals(3, results.names().length);
         final Map<String, Node> solution = results.next();
         assertTrue(solution.containsKey("name"));
-        assertEquals(solutionNode.getURI(), solution.get("name").stringValue());
+        assertEquals(solutionNode1.getURI(), solution.get("name").stringValue());
+        assertTrue(solution.containsKey("rank"));
+        assertEquals(solutionNode2.getLexicalForm(), solution.get("rank").stringValue());
+        assertTrue(solution.containsKey("serialNumber"));
+        assertEquals(solutionNode3.getId().getLabelString(), solution.get("serialNumber").stringValue());
+
         assertEquals(3, results.count());
     }
 }
