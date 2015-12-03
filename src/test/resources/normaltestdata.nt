@@ -1,8 +1,0 @@
-<info:subject1> <info:predicate1> <info:subject2> . 
-<info:subject2> <info:predicate2> "1234"^^<http://www.w3.org/2001/XMLSchema#integer> .
-<info:subject2> <info:predicate2> "Chrysophylax"^^<http://www.example.com/dives> .
-<info:subject3>  <info:predicate3> "Shalom!"@he .
-<info:subject4>  <info:predicate4> "Oingoboingo" .
-# note the absence of triples using blank nodes
-# Fedora does not create or manage such triples, so this is safe
-# additionally, it is not possible to manage the conversion of blank nodes across SPARQL statelessly

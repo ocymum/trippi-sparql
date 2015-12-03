@@ -2,12 +2,12 @@
 
 To build (requires Java 8):
 
-    cd trippi-sparql-update ; mvn clean install
+    cd trippi-sparql ; mvn clean install
 
-This will result in a large `trippi-sparql-update-*.jar` JAR in the `target/` directory which contains the connector and its dependencies. To use this connector with Fedora 3, this large JAR can be dropped into the `WEB-INF/lib/` directory of a Fedora 3 web-application. Then, a `<datastore/>` element must be configured in `fedora.fcfg`. An example is shown below featuring the various parameters available. For each parameter except `connectorClassName` and `updateEndpoint`, a default will be used if no `<param/>` element for that parameter is supplied. The default will be the value shown in the example below, except that the default for the SPARQL CONSTRUCT Query endpoint is just the ordinary SPARQL Query endpoint, and the default for the ordinary SPARQL Query endpoint is the SPARQL Update endpoint. 
+This will result in a large `trippi-sparql-*.jar` JAR in the `trippi-sparql/trippi-sparql/target/` directory which contains the connector and its dependencies, and a `trippi-sparql-fcrepo-webapp-*.war` WAR in `trippi-sparql/trippi-sparql-fcrepo-webapp/target` . To use this connector with Fedora 3, this large JAR can be dropped into the `WEB-INF/lib/` directory of a Fedora 3 web-application, or the WAR file can be used (it is simply the ordinary Fedora 3 web-application with the JAR pre-installed). Then, a `<datastore/>` element must be configured in `fedora.fcfg`. An example is shown below featuring the various parameters available. For each parameter except `connectorClassName` and `updateEndpoint`, a default will be used if no `<param/>` element for that parameter is supplied. The default will be the value shown in the example below, except that the default for the SPARQL CONSTRUCT Query endpoint is just the ordinary SPARQL Query endpoint, and the default for the ordinary SPARQL Query endpoint is the SPARQL Update endpoint. 
 
 
-    <datastore id="sparqlUpdateTriplestore">
+    <datastore id="sparqlTriplestore">
         <comment>Triplestore addressed by SPARQL-over-HTTP used by the Resource Index</comment>
         <param name="connectorClassName" value="com.asoroka.trippi.impl.sparql.SparqlConnector">
             <comment>The name of the Trippi Connector class used to communicate with the triplestore.</comment>
@@ -18,10 +18,10 @@ This will result in a large `trippi-sparql-update-*.jar` JAR in the `target/` di
         <param name="updateEndpoint" value="http://localhost:3030/fuseki/update">
             <comment>The URL of a SPARQL Update endpoint for the triplestore to be used with this connector.</comment>
         </param>
-        <param name="queryEndpoint" value="http://localhost:3030/fuseki/update">
+        <param name="queryEndpoint" value="http://localhost:3030/fuseki/query">
             <comment>The URL of a SPARQL Query endpoint for the triplestore to be used with this connector. This endpoint will be used for non-CONSTRUCT queries.</comment>
         </param>
-        <param name="constructEndpoint" value="http://localhost:3030/fuseki/update">
+        <param name="constructEndpoint" value="http://localhost:3030/fuseki/query">
             <comment>The URL of a SPARQL Query endpoint for the triplestore to be used with this connector. This endpoint will be used for CONSTRUCT queries.</comment>
         </param>
         <param name="autoFlushDormantSeconds" value="5">
@@ -42,7 +42,7 @@ Lastly, the `<module role="org.fcrepo.server.resourceIndex.ResourceIndex"/>` sec
 
     <module role="org.fcrepo.server.resourceIndex.ResourceIndex" class="org.fcrepo.server.resourceIndex.ResourceIndexModule">
         <comment>Supports the ResourceIndex.</comment>
-        <param name="datastore" value="sparqlUpdateTriplestore">
+        <param name="datastore" value="sparqlTriplestore">
             <comment>(required)  Name of the triplestore to use. WARNING: changing the  triplestore running the Resource Index Rebuilder.</comment>
         </param>
         …
