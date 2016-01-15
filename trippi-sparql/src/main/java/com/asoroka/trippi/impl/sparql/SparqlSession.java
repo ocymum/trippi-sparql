@@ -40,8 +40,7 @@ import org.trippi.impl.base.TriplestoreSession;
 import org.trippi.io.SimpleTripleIterator;
 
 /**
- * A write-only {@link TriplestoreSession} implementation. The expectation for this class is that query access to the
- * triplestore will be provided by some means outside of Trippi, for example, via some SPARQL-over-HTTP service.
+ * A {@link TriplestoreSession} implementation using SPARQL Query and Update for all operations.
  *
  * @author A. Soroka
  */
@@ -55,12 +54,12 @@ public class SparqlSession implements TriplestoreSession {
     private final Consumer<UpdateRequest> updateExecutor;
 
     /**
-     * The service against which to execute SPARQL Query requests, exceptCONSTRUCT requests.
+     * The service against which to execute SPARQL Query requests, except CONSTRUCT requests.
      */
     private final Function<Query, ResultSet> queryExecutor;
 
     /**
-     * The service against which to execute SPARQL Query CONSTRUCTrequests.
+     * The service against which to execute SPARQL Query CONSTRUCT requests.
      */
     private final Function<Query, Model> constructExecutor;
 
