@@ -8,7 +8,7 @@
 	<artifactId>trippi-sparql</artifactId>
 	<parent>
 		<artifactId>trippi-sparql-parent</artifactId>
-		<groupId>com.asoroka.trippi</groupId>
+		<groupId>edu.si.trippi</groupId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 

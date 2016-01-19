@@ -32,7 +32,7 @@
     <appender-ref ref="FEDORA"/>
   </logger>
 
-  <logger name="com.asoroka.trippi" additivity="false" level="DEBUG">
+  <logger name="edu.si.trippi" additivity="false" level="DEBUG">
     <appender-ref ref="FEDORA"/>
     <appender-ref ref="STDOUT"/>
   </logger>
