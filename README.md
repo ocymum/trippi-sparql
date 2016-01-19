@@ -9,7 +9,7 @@ This will result in a large `trippi-sparql-*.jar` JAR in the `trippi-sparql/trip
 
     <datastore id="sparqlTriplestore">
         <comment>Triplestore addressed by SPARQL-over-HTTP used by the Resource Index</comment>
-        <param name="connectorClassName" value="SparqlConnector">
+        <param name="connectorClassName" value="edu.si.trippi.impl.sparql.SparqlConnector">
             <comment>The name of the Trippi Connector class used to communicate with the triplestore.</comment>
         </param>
         <param name="maxHttpConnections" value="10">
