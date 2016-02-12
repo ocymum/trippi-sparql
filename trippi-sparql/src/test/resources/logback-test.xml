@@ -7,7 +7,7 @@
         </encoder>
     </appender>
     
-    <logger name="com.asoroka.trippi.impl" additivity="false" level="${testLogLevel:DEBUG}">
+    <logger name="edu.si.trippi.impl" additivity="false" level="${testLogLevel:DEBUG}">
         <appender-ref ref="STDOUT"/>
     </logger>
     <root additivity="false" level="INFO">

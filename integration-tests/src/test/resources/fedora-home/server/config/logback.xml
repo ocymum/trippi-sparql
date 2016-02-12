@@ -20,7 +20,7 @@
       <MaxFileSize>20MB</MaxFileSize>
     </triggeringPolicy>
   </appender>
-  <logger name="org.fcrepo" additivity="false" level="INFO">
+  <logger name="org.fcrepo" additivity="false" level="WARN">
     <appender-ref ref="FEDORA"/>
     <appender-ref ref="STDOUT"/>
   </logger>
@@ -32,10 +32,19 @@
     <appender-ref ref="FEDORA"/>
   </logger>
 
-  <logger name="com.asoroka.trippi" additivity="false" level="DEBUG">
+  <logger name="edu.si.trippi" additivity="false" level="DEBUG">
     <appender-ref ref="FEDORA"/>
     <appender-ref ref="STDOUT"/>
   </logger>
+  
+  <logger name="org.apache.http.wire" additivity="false" level="INFO">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+  
+  <logger name="org.apache.http.headers" additivity="false" level="INFO">
+    <appender-ref ref="STDOUT"/>
+  </logger>
+  
   <logger name="org.mulgara" additivity="false" level="WARN">
     <appender-ref ref="STDOUT"/>
   </logger>
