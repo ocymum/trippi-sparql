@@ -4,6 +4,7 @@ package edu.si.trippi.impl.sparql;
 import static org.apache.jena.query.QueryExecutionFactory.sparqlService;
 import static org.apache.jena.update.UpdateExecutionFactory.createRemote;
 
+import org.apache.jena.graph.Node;
 import org.trippi.impl.base.TriplestoreSessionFactory;
 
 /**
@@ -17,6 +18,8 @@ public class SparqlSessionFactory implements TriplestoreSessionFactory {
 
     private final String updateEndpoint, queryEndpoint, constructEndpoint;
 
+    private Node graphName;
+    
     /**
      * Full constructor.
      *
@@ -25,16 +28,17 @@ public class SparqlSessionFactory implements TriplestoreSessionFactory {
      * @param constructEndpoint the SPARQL Query endpoint against which to act for CONSTRUCT queries
      */
     public SparqlSessionFactory(final String updateEndpoint, final String queryEndpoint,
-            final String constructEndpoint) {
+            final String constructEndpoint, final Node gN) {
         this.updateEndpoint = updateEndpoint;
         this.queryEndpoint = queryEndpoint;
         this.constructEndpoint = constructEndpoint;
+        this.graphName = gN;
     }
 
     @Override
     public SparqlSession newSession() {
         return new SparqlSession(u -> createRemote(u, updateEndpoint).execute(), q -> sparqlService(queryEndpoint, q)
-                .execSelect(), c -> sparqlService(constructEndpoint, c).execConstruct());
+                .execSelect(), c -> sparqlService(constructEndpoint, c).execConstruct(), graphName);
     }
 
     @Override

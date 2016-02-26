@@ -1,15 +1,18 @@
 
 package edu.si.trippi.impl.sparql;
 
+import static edu.si.trippi.impl.sparql.SparqlConnector.rebase;
 import static edu.si.trippi.impl.sparql.SparqlSession.Operation.DELETE;
 import static edu.si.trippi.impl.sparql.SparqlSession.Operation.INSERT;
 import static edu.si.trippi.impl.sparql.converters.ObjectConverter.objectConverter;
 import static edu.si.trippi.impl.sparql.converters.PredicateConverter.predicateConverter;
 import static edu.si.trippi.impl.sparql.converters.SubjectConverter.subjectConverter;
 import static edu.si.trippi.impl.sparql.converters.TripleConverter.tripleConverter;
+import static java.lang.String.format;
 import static org.apache.jena.ext.com.google.common.collect.FluentIterable.from;
 import static org.apache.jena.riot.writer.NTriplesWriter.write;
 import static org.apache.jena.sparql.util.FmtUtils.stringForNode;
+import static org.apache.jena.update.UpdateFactory.create;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -18,6 +21,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Node_Variable;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.query.Query;
@@ -25,7 +29,6 @@ import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 import org.jrdf.graph.ObjectNode;
 import org.jrdf.graph.PredicateNode;
@@ -62,6 +65,8 @@ public class SparqlSession implements TriplestoreSession {
      */
     private final Function<Query, Model> constructExecutor;
 
+    private final String graphName;
+
     /**
      * Default constructor.
      *
@@ -70,10 +75,11 @@ public class SparqlSession implements TriplestoreSession {
      * @param constructExecutor the service against which to execute SPARQL Query CONSTRUCT requests
      */
     public SparqlSession(final Consumer<UpdateRequest> updateExecutor, final Function<Query, ResultSet> queryExecutor,
-                    final Function<Query, Model> constructExecutor) {
+                    final Function<Query, Model> constructExecutor, final Node gN) {
         this.updateExecutor = updateExecutor;
         this.queryExecutor = queryExecutor;
         this.constructExecutor = constructExecutor;
+        this.graphName = stringForNode(gN);
     }
 
     @Override
@@ -96,7 +102,10 @@ public class SparqlSession implements TriplestoreSession {
      */
     private void mutate(final Set<org.jrdf.graph.Triple> triples, final Operation operation) {
         final Iterable<Triple> trips = from(triples).transform(tripleConverter::convert);
-        final UpdateRequest request = UpdateFactory.create(operation + " { " + datablock(trips) + " } WHERE {}");
+        final String datablock = datablock(trips);
+        final String payload = rebase(format("%1$s DATA { GRAPH %2$s { %3$s } . }", operation, graphName, datablock));
+        log.debug("Sending SPARQL Update operation:\n{}", payload);
+        final UpdateRequest request = create(payload);
         updateExecutor.accept(request);
     }
 
@@ -140,14 +149,14 @@ public class SparqlSession implements TriplestoreSession {
     @Override
     public TupleIterator query(final String queryText, final String lang) throws TrippiException {
         checkLang(lang);
-        final Query query = QueryFactory.create(queryText);
+        final Query query = QueryFactory.create(rebase(queryText));
         return new ResultSetTupleIterator(queryExecutor.apply(query));
     }
 
     @Override
     public TripleIterator findTriples(final String lang, final String queryText) throws TrippiException {
         checkLang(lang);
-        final Query query = QueryFactory.create(queryText);
+        final Query query = QueryFactory.create(rebase(queryText));
         final Model answer = constructExecutor.apply(query);
         final Set<org.jrdf.graph.Triple> triples = answer.listStatements().mapWith(Statement::asTriple).mapWith(
                         tripleConverter.reverse()::convert).toSet();
@@ -172,8 +181,8 @@ public class SparqlSession implements TriplestoreSession {
         final String s = stringForNode(subj == null ? new Node_Variable("s") : subjectConverter.convert(subj));
         final String p = stringForNode(pred == null ? new Node_Variable("p") : predicateConverter.convert(pred));
         final String o = stringForNode(obj == null ? new Node_Variable("o") : objectConverter.convert(obj));
-
-        final String queryText = "CONSTRUCT WHERE { " + s + " " + p + " " + o + " }";
+        final String triplePattern = format(" { %1$s %2$s %3$s} ", s, p, o);
+        final String queryText = format("CONSTRUCT %1$s WHERE { GRAPH %2$s %1$s . }", triplePattern, graphName);
         return findTriples("sparql", queryText);
     }
 }
