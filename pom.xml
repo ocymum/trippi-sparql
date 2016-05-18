@@ -13,6 +13,19 @@
 	<name>Trippi :: SPARQL</name>
 	<description>Trippi RDF SPI implementation using SPARQL over HTTP</description>
 
+	<developers>
+		<developer>
+			<id>ajs6f</id>
+			<name>A. Soroka</name>
+			<timezone>America/Kentucky/Louisville</timezone>
+			<url>http://www.asoroka.com</url>
+			<roles>
+				<role>Originator</role>
+			</roles>
+		</developer>
+		
+	</developers>
+
 	<modules>
 		<module>trippi-sparql</module>
 		<module>integration-tests</module>
