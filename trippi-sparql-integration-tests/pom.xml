@@ -1,12 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>edu.si.trippi</groupId>
-		<artifactId>trippi-sparql-parent</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+
+    <parent>
+		<groupId>edu.si</groupId>
+		<artifactId>trippi</artifactId>
+		<version>0.4.4</version>
 	</parent>
-	<artifactId>integration-tests</artifactId>
+	<artifactId>trippi-sparql-integration-tests</artifactId>
 
 	<properties>
 		<servlet.port>8080</servlet.port>
@@ -16,18 +17,20 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>edu.si.trippi</groupId>
+			<groupId>edu.si</groupId>
 			<artifactId>trippi-sparql</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
-			<groupId>edu.si.trippi</groupId>
+			<groupId>edu.si</groupId>
 			<artifactId>trippi-sparql-fcrepo-webapp</artifactId>
 			<version>${project.version}</version>
 			<type>war</type>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-fuseki-war</artifactId>
@@ -46,7 +49,6 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
-			<version>1.7.13</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -60,11 +62,13 @@
 					the Trippi :: SPARQL configuration in fedora.fcfg -->
 				<filtering>true</filtering>
 			</testResource>
+
 			<testResource>
 				<directory>${basedir}/src/test/resources/fuseki-base</directory>
 				<targetPath>${fuseki.base}</targetPath>
 			</testResource>
 		</testResources>
+
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -133,8 +137,9 @@
 							<artifactId>jena-fuseki-war</artifactId>
 							<type>war</type>
 						</deployable>
+
 						<deployable>
-							<groupId>edu.si.trippi</groupId>
+							<groupId>edu.si</groupId>
 							<artifactId>trippi-sparql-fcrepo-webapp</artifactId>
 							<type>war</type>
 						</deployable>
@@ -148,6 +153,7 @@
 							<goal>start</goal>
 						</goals>
 					</execution>
+
 					<execution>
 						<id>stop</id>
 						<phase>post-integration-test</phase>

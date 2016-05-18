@@ -5,36 +5,103 @@
 	</prerequisites>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>trippi-sparql-parent</artifactId>
-	<groupId>edu.si.trippi</groupId>
-	<version>0.0.1-SNAPSHOT</version>
+	<groupId>edu.si</groupId>
+	<artifactId>trippi</artifactId>
+	<version>0.4.4</version>
 	<packaging>pom</packaging>
 
 	<name>Trippi :: SPARQL</name>
+	<url>http://oris.si.edu/trippi-sparql/</url>
 	<description>Trippi RDF SPI implementation using SPARQL over HTTP</description>
+
+	<organization>
+		<name>Smithsonian Institution</name>
+		<url>http://si.edu/</url>
+	</organization>
+
+	<licenses>
+		<license>
+			<name>Licensed under the Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+			<comments>Copyright (c) 2015-2016 Smithsonian Institution</comments>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<issueManagement>
+		<system>jira</system>
+		<url>https://jira.si.edu</url>
+	</issueManagement>
 
 	<modules>
 		<module>trippi-sparql</module>
-		<module>integration-tests</module>
+		<module>trippi-sparql-integration-tests</module>
 		<module>trippi-sparql-fcrepo-webapp</module>
 	</modules>
 
-	<dependencies>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
 
-		<!-- test gear -->
+    <developers>
+        <developer>
+            <name>Adam Soroka</name>
+        </developer>
+        <developer>
+            <name>Daniel Davis</name>
+        </developer>
+    </developers>
+
+    <scm>
+        <developerConnection>scm:git:git@github.com:Smithsonian/trippi-sparql.git</developerConnection>
+        <connection>scm:git:git://github.com/Smithsonian/trippi-sparql.git</connection>
+        <url>https://github.com/Smithsonian/trippi-sparql</url>
+    </scm>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.google.collections</groupId>
+                <artifactId>google-collections</artifactId>
+                <version>1.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.jena</groupId>
+                <artifactId>jena-arq</artifactId>
+                <version>3.0.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>1.7.12</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.trippi</groupId>
+                <artifactId>trippi-core</artifactId>
+                <version>1.5.10</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+		<!-- test -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>1.1.3</version>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
 
 	<build>
@@ -47,7 +114,8 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-			<plugin>
+
+            <plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.7.5.201505241946</version>
@@ -58,12 +126,14 @@
 							<goal>prepare-agent</goal>
 						</goals>
 					</execution>
+
 					<execution>
 						<id>default-prepare-agent-integration</id>
 						<goals>
 							<goal>prepare-agent-integration</goal>
 						</goals>
 					</execution>
+
 					<execution>
 						<id>default-report</id>
 						<phase>prepare-package</phase>
@@ -71,6 +141,7 @@
 							<goal>report</goal>
 						</goals>
 					</execution>
+
 					<execution>
 						<id>default-report-integration</id>
 						<goals>

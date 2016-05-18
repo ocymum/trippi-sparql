@@ -4,14 +4,13 @@
 		<maven>3.0.0</maven>
 	</prerequisites>
 	<modelVersion>4.0.0</modelVersion>
-	
-	<artifactId>trippi-sparql</artifactId>
-	<parent>
-		<artifactId>trippi-sparql-parent</artifactId>
-		<groupId>edu.si.trippi</groupId>
-		<version>0.0.1-SNAPSHOT</version>
-	</parent>
 
+	<parent>
+		<artifactId>trippi</artifactId>
+		<groupId>edu.si</groupId>
+		<version>0.4.4</version>
+	</parent>
+    <artifactId>trippi-sparql</artifactId>
 
 	<name>Trippi :: SPARQL :: Core</name>
 	<description>Trippi RDF SPI implementation using SPARQL over HTTP</description>
@@ -20,7 +19,6 @@
 		<dependency>
 			<groupId>org.trippi</groupId>
 			<artifactId>trippi-core</artifactId>
-			<version>1.5.10</version>
 			<exclusions>
 				<exclusion>
 					<groupId>junit</groupId>
@@ -32,15 +30,15 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
+
+        <dependency>
 			<groupId>com.google.collections</groupId>
 			<artifactId>google-collections</artifactId>
-			<version>1.0</version>
 		</dependency>
-		<dependency>
+
+        <dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-arq</artifactId>
-			<version>3.0.0</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>log4j</artifactId>
@@ -52,13 +50,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
-			<version>1.7.12</version>
 		</dependency>
-
-		
 	</dependencies>
 
 	<build>
@@ -68,10 +64,47 @@
 				<artifactId>versions-maven-plugin</artifactId>
 				<version>2.2</version>
 			</plugin>
-			<plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.3</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <links>
+                        <link>http://docs.oracle.com/javase/8/docs/api/</link>
+                    </links>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.4.1</version>
+				<version>2.4.3</version>
 				<configuration>
 					<filters>
 						<filter>
@@ -93,7 +126,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			
 		</plugins>
 	</build>
 </project>
