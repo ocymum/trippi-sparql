@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<prerequisites>
 		<maven>3.0.0</maven>
 	</prerequisites>
@@ -6,7 +7,7 @@
 
 	<groupId>edu.si.trippi</groupId>
 	<artifactId>trippi</artifactId>
-	<version>0.4.5-SNAPSHOT</version>
+	<version>0.4.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Trippi :: SPARQL</name>
@@ -71,8 +72,7 @@
         <developerConnection>scm:git:git@github.com:Smithsonian/trippi-sparql.git</developerConnection>
         <connection>scm:git:git://github.com/Smithsonian/trippi-sparql.git</connection>
         <url>scm:git:git://github.com/Smithsonian/trippi-sparql.git</url>
-      <tag>HEAD</tag>
-  </scm>
+    </scm>
 
     <dependencyManagement>
         <dependencies>
