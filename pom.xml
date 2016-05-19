@@ -5,9 +5,9 @@
 	</prerequisites>
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>edu.si</groupId>
+	<groupId>edu.si.trippi</groupId>
 	<artifactId>trippi</artifactId>
-	<version>0.4.4</version>
+	<version>0.4.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Trippi :: SPARQL</name>
@@ -46,17 +46,32 @@
 
     <developers>
         <developer>
-            <name>Adam Soroka</name>
+            <id>ajs6f</id>
+            <name>A. Soroka</name>
+            <timezone>America/Kentucky/Louisville</timezone>
+            <url>http://www.asoroka.com</url>
+            <roles>
+                <role>Originator</role>
+            </roles>
         </developer>
+
         <developer>
+            <id>davisda</id>
             <name>Daniel Davis</name>
+            <email>davisda at si dot edu</email>
+            <timezone>America/New_York</timezone>
+            <organization>Smithsonian Institution</organization>
+            <organizationUrl>http://si.edu</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
         </developer>
     </developers>
 
     <scm>
         <developerConnection>scm:git:git@github.com:Smithsonian/trippi-sparql.git</developerConnection>
         <connection>scm:git:git://github.com/Smithsonian/trippi-sparql.git</connection>
-        <url>https://github.com/Smithsonian/trippi-sparql</url>
+        <url>scm:git:git://github.com/Smithsonian/trippi-sparql.git</url>
     </scm>
 
     <dependencyManagement>
@@ -105,7 +120,22 @@
 	</dependencies>
 
 	<build>
-		<plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>2.5</version>
+                    <configuration>
+                        <useReleaseProfile>false</useReleaseProfile>
+                        <releaseProfiles>release</releaseProfiles>
+                        <goals>deploy</goals>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.3</version>
@@ -150,6 +180,90 @@
 					</execution>
 				</executions>
 			</plugin>
-		</plugins>
+
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+        </plugins>
 	</build>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.10.3</version>
+                        <configuration>
+                            <encoding>UTF-8</encoding>
+                            <links>
+                                <link>http://docs.oracle.com/javase/8/docs/api/</link>
+                            </links>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>

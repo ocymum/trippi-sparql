@@ -3,9 +3,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
     <parent>
-		<groupId>edu.si</groupId>
+		<groupId>edu.si.trippi</groupId>
 		<artifactId>trippi</artifactId>
-		<version>0.4.4</version>
+		<version>0.4.4-SNAPSHOT</version>
 	</parent>
 	<artifactId>trippi-sparql-integration-tests</artifactId>
 

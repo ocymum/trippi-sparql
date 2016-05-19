@@ -6,9 +6,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
+        <groupId>edu.si.trippi</groupId>
 		<artifactId>trippi</artifactId>
-		<groupId>edu.si</groupId>
-		<version>0.4.4</version>
+		<version>0.4.4-SNAPSHOT</version>
 	</parent>
     <artifactId>trippi-sparql</artifactId>
 
@@ -64,42 +64,6 @@
 				<artifactId>versions-maven-plugin</artifactId>
 				<version>2.2</version>
 			</plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.3</version>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                    <links>
-                        <link>http://docs.oracle.com/javase/8/docs/api/</link>
-                    </links>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 
             <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
