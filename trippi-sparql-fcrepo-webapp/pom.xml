@@ -21,9 +21,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>edu.si</groupId>
+			<groupId>edu.si.trippi</groupId>
 			<artifactId>trippi-sparql</artifactId>
-			<version>0.4.4</version>
+			<version>${project.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
@@ -40,6 +40,7 @@
                 <version>2.6</version>
 				<configuration>
 					<dependentWarIncludes>**</dependentWarIncludes>
+                     <failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
 			</plugin>
 		</plugins>
