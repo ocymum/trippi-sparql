@@ -38,26 +38,18 @@ import static org.apache.jena.sparql.util.FmtUtils.stringForNode;
 import static org.trippi.TripleMaker.createResource;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.io.StringReader;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.jena.rdf.model.Model;
-import org.jrdf.graph.GraphElementFactoryException;
 import org.jrdf.graph.Node;
 import org.jrdf.graph.Triple;
 import org.junit.Test;
-import org.openrdf.model.Resource;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
 import org.trippi.TriplestoreReader;
 import org.trippi.TriplestoreWriter;
 import org.trippi.TrippiException;
 import org.trippi.TupleIterator;
-import org.trippi.impl.RDFFactories;
 
 import edu.si.trippi.impl.sparql.SparqlConnector;
 import edu.si.trippi.impl.sparql.SparqlSession.UnsupportedLanguageException;
@@ -194,17 +186,17 @@ public class DirectIT extends IT {
                     "<info:subject3>  <info:predicate3> \"Shalom!\"@he .\n" +
                     "<info:subject4>  <info:predicate4> \"Oingoboingo\" .\n";
 
-    private static Model jenaStatements = createDefaultModel();
+    private static final Model jenaStatements = createDefaultModel();
 
-    private static List<Triple> triples = new ArrayList<>();
+    private static final List<Triple> triples;
 
     static {
-        try (Reader rdf = new StringReader(testData)) {
+        try (final StringReader rdf = new StringReader(testData)) {
             jenaStatements.read(rdf, null, "N-TRIPLE");
-        } catch (final IOException e) {
-            throw new AssertionError(e);
         }
-        triples = jenaStatements.listStatements().mapWith(org.apache.jena.rdf.model.Statement::asTriple)
-                        .mapWith(tripleConverter.reverse()::convert).toList();
+        triples = jenaStatements.listStatements()
+                        .mapWith(org.apache.jena.rdf.model.Statement::asTriple)
+                        .mapWith(tripleConverter.reverse()::convert)
+                        .toList();
     }
 }
