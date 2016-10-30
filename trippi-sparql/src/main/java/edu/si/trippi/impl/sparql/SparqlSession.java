@@ -111,13 +111,11 @@ public class SparqlSession implements TriplestoreSession {
 
     @Override
     public void add(final Set<org.jrdf.graph.Triple> triples) {
-        log.debug("Adding triples: {}", triples);
         mutate(triples, INSERT);
     }
 
     @Override
     public void delete(final Set<org.jrdf.graph.Triple> triples) {
-        log.debug("Deleting triples: {}", triples);
         mutate(triples, DELETE);
     }
 
@@ -128,6 +126,7 @@ public class SparqlSession implements TriplestoreSession {
      * @param operation the type of mutating operation to perform
      */
     protected void mutate(final Set<org.jrdf.graph.Triple> triples, final Operation operation) {
+        log.debug(operation + " for triples: {}", triples);
         final Iterable<Triple> trips = from(triples).transform(tripleConverter::convert);
         final String datablock = datablock(trips);
         final String payload = rebase(format("%1$s DATA { GRAPH %2$s { %3$s } . }", operation, graphName, datablock));
