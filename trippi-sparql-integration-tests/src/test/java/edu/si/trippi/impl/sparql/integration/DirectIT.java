@@ -35,8 +35,6 @@ import static org.apache.jena.graph.NodeFactory.createURI;
 import static org.apache.jena.query.QueryExecutionFactory.sparqlService;
 import static org.apache.jena.rdf.model.ModelFactory.createDefaultModel;
 import static org.apache.jena.sparql.util.FmtUtils.stringForNode;
-import static org.openrdf.rio.RDFFormat.NTRIPLES;
-import static org.openrdf.rio.Rio.createParser;
 import static org.trippi.TripleMaker.createResource;
 
 import java.io.IOException;
@@ -53,13 +51,8 @@ import org.jrdf.graph.Node;
 import org.jrdf.graph.Triple;
 import org.junit.Test;
 import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.RDFParseException;
-import org.openrdf.rio.RDFParser;
-import org.openrdf.rio.helpers.StatementCollector;
 import org.trippi.TriplestoreReader;
 import org.trippi.TriplestoreWriter;
 import org.trippi.TrippiException;
@@ -102,8 +95,10 @@ public class DirectIT extends IT {
         // configure our SPARQL-based Trippi connector
         final SparqlConnector sparqlConnector = new SparqlConnector();
         final String datasetUrl = fusekiUrl + DATASET_NAME;
-        sparqlConnector.setConfiguration(of("updateEndpoint", datasetUrl + "/update", "queryEndpoint",
-                        datasetUrl + "/query", "graphName", "#test"));
+        final String queryService = datasetUrl + "/query";
+        final String updateService = datasetUrl + "/update";
+        sparqlConnector.setConfiguration(
+                        of("updateEndpoint", updateService, "queryEndpoint", queryService, "graphName", "#test"));
 
         final TriplestoreReader reader = sparqlConnector.getReader();
         try {
@@ -121,7 +116,7 @@ public class DirectIT extends IT {
         writer.add(triples, true);
 
         // check that they were all added
-        Model results = sparqlService(datasetUrl + "/query", ALL_TRIPLES).execConstruct();
+        Model results = sparqlService(queryService, ALL_TRIPLES).execConstruct();
         assertTrue("Failed to discover the triples we stored!", results.containsAll(jenaStatements));
 
         // check that we can query them via our connector
@@ -142,7 +137,7 @@ public class DirectIT extends IT {
         writer.delete(triples, true);
 
         // check that they were all removed
-        results = sparqlService(datasetUrl + "/query", ALL_TRIPLES).execConstruct();
+        results = sparqlService(queryService, ALL_TRIPLES).execConstruct();
         assertFalse(results.containsAny(jenaStatements));
 
         sparqlConnector.close();
@@ -155,33 +150,38 @@ public class DirectIT extends IT {
         // writer
         final SparqlConnector sparqlConnector = new SparqlConnector();
         final String datasetUrl = fusekiUrl + READONLY_DATASET_NAME;
-        sparqlConnector.setConfiguration(of("updateEndpoint", datasetUrl + "/update", "queryEndpoint",
-                        datasetUrl + "/query", "graphName", "#test"));
+        final String queryService = datasetUrl + "/query";
+        final String updateService = datasetUrl + "/update";
+        sparqlConnector.setConfiguration(
+                        of("updateEndpoint", updateService, "queryEndpoint", queryService, "graphName", "#test"));
         final TriplestoreWriter writer = sparqlConnector.getWriter();
         // read-only "writer"
         final SparqlConnector readOnlysparqlConnector = new SparqlConnector();
-        readOnlysparqlConnector.setConfiguration(of("updateEndpoint", datasetUrl + "/update", "queryEndpoint",
-                        datasetUrl + "/query", "graphName", "#test", "readOnly", "true"));
+        readOnlysparqlConnector.setConfiguration(of("updateEndpoint", updateService, "queryEndpoint", queryService,
+                        "graphName", "#test", "readOnly", "true"));
         final TriplestoreWriter readOnlywriter = readOnlysparqlConnector.getWriter();
-
+        // should not do anything
         readOnlywriter.add(triples, true);
         // check that they were all added
-        Model results = sparqlService(datasetUrl + "/query", ALL_TRIPLES).execConstruct();
+        Model results = sparqlService(queryService, ALL_TRIPLES).execConstruct();
         assertTrue("Should not be able to write with a read-only session!", results.isEmpty());
         writer.add(triples, true);
         // now they really should have been added
-        results = sparqlService(datasetUrl + "/query", ALL_TRIPLES).execConstruct();
+        results = sparqlService(queryService, ALL_TRIPLES).execConstruct();
         assertTrue("Failed to discover the triples we stored!", results.containsAll(jenaStatements));
+        // should not do anything
+        readOnlywriter.delete(triples, true);
+        // now they should still be there
+        results = sparqlService(queryService, ALL_TRIPLES).execConstruct();
+        assertTrue("Should not be able to delete with a read-only session!", results.containsAll(jenaStatements));
+        // should really remove them
+        writer.delete(triples, true);
+        // now they should really be gone
+        results = sparqlService(queryService, ALL_TRIPLES).execConstruct();
+        assertTrue("Should be able to delete with an ordinary session!", results.isEmpty());
+
         sparqlConnector.close();
         readOnlysparqlConnector.close();
-    }
-
-    private static Triple createTriple(final Resource s, final URI p, final Value o) {
-        try {
-            return RDFFactories.createTriple(s, p, o);
-        } catch (GraphElementFactoryException | URISyntaxException e) {
-            throw new AssertionError(e);
-        }
     }
 
     /**
@@ -199,16 +199,12 @@ public class DirectIT extends IT {
     private static List<Triple> triples = new ArrayList<>();
 
     static {
-        final RDFParser parser = createParser(NTRIPLES);
-        final StatementCollector handler = new StatementCollector();
-        parser.setRDFHandler(handler);
         try (Reader rdf = new StringReader(testData)) {
-            parser.parse(rdf, "");
-        } catch (RDFParseException | RDFHandlerException | IOException e) {
+            jenaStatements.read(rdf, null, "N-TRIPLE");
+        } catch (final IOException e) {
             throw new AssertionError(e);
         }
-        for (final Statement s : handler.getStatements())
-            triples.add(createTriple(s.getSubject(), s.getPredicate(), s.getObject()));
-        triples.stream().map(tripleConverter::convert).map(jenaStatements::asStatement).forEach(jenaStatements::add);
+        triples = jenaStatements.listStatements().mapWith(org.apache.jena.rdf.model.Statement::asTriple)
+                        .mapWith(tripleConverter.reverse()::convert).toList();
     }
 }
