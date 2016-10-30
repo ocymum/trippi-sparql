@@ -11,5 +11,5 @@
 	:serviceReadGraphStore "get";
 	:dataset <#dataset>; .
 
-	## In-memory, initially empty.
+## In-memory, initially empty.
 <#dataset> rdf:type ja:RDFDataset .

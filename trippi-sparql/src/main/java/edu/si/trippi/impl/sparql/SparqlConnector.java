@@ -156,7 +156,7 @@ public class SparqlConnector extends TriplestoreConnector {
                         DEFAULT_AUTO_FLUSH_BUFFER_SIZE));
         final int autoFlushDormantSeconds = parseInt(config.getOrDefault("autoFlushDormantSeconds",
                         DEFAULT_AUTO_FLUSH_DORMANT_SECONDS));
-        final boolean readOnly = parseBoolean(config.get("updateEndpoint"));
+        final boolean readOnly = parseBoolean(config.get("readOnly"));
         log.info("This is {}a read-only connector.", readOnly ? "" : "not ");
         final String updateEndpoint = config.get("updateEndpoint");
         log.info("Using update endpoint {}", updateEndpoint);

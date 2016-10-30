@@ -30,7 +30,7 @@ package edu.si.trippi.impl.sparql;
 
 import static org.apache.jena.query.QueryExecutionFactory.sparqlService;
 import static org.apache.jena.update.UpdateExecutionFactory.createRemote;
-
+import edu.si.trippi.impl.sparql.SparqlSession.ReadOnlySparqlSession;
 import org.apache.jena.graph.Node;
 import org.trippi.impl.base.TriplestoreSessionFactory;
 
@@ -68,8 +68,12 @@ public class SparqlSessionFactory implements TriplestoreSessionFactory {
 
     @Override
     public SparqlSession newSession() {
-        return new SparqlSession(u -> createRemote(u, updateEndpoint).execute(), q -> sparqlService(queryEndpoint, q)
-                .execSelect(), c -> sparqlService(constructEndpoint, c).execConstruct(), graphName, readOnly);
+        return readOnly ? new ReadOnlySparqlSession(u -> createRemote(u, updateEndpoint).execute(),
+                        q -> sparqlService(queryEndpoint, q).execSelect(),
+                        c -> sparqlService(constructEndpoint, c).execConstruct(), graphName)
+                        : new SparqlSession(u -> createRemote(u, updateEndpoint).execute(),
+                        q -> sparqlService(queryEndpoint, q).execSelect(),
+                        c -> sparqlService(constructEndpoint, c).execConstruct(), graphName);
     }
 
     @Override
