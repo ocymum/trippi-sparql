@@ -64,6 +64,7 @@ import org.trippi.TupleIterator;
 import org.trippi.impl.RDFFactories;
 
 import edu.si.trippi.impl.sparql.SparqlConnector;
+import edu.si.trippi.impl.sparql.SparqlSession.UnsupportedLanguageException;
 
 /**
  * Tests of interaction directly between this Trippi implementation and a SPARQL endpoint. (Eliding Fedora.) This
@@ -94,12 +95,13 @@ public class DirectIT extends IT {
         final String datasetUrl = fusekiUrl + DATASET_NAME;
         sparqlConnector.setConfiguration(of("updateEndpoint", datasetUrl + "/update", "queryEndpoint", datasetUrl +
                         "/query", "graphName", "#test"));
-        
+
         final TriplestoreReader reader = sparqlConnector.getReader();
         try {
             reader.countTriples("itql", "", 0, false);
             fail("This connector should not accept iTQL queries!");
-        } catch (final TrippiException e) {/** Expected. **/
+        } catch (final TrippiException e) {
+            assertTrue("Should not accept iTQL queries! ", e instanceof UnsupportedLanguageException);
         }
 
         // load some simple sample triples
@@ -115,7 +117,7 @@ public class DirectIT extends IT {
             triples.add(createTriple(s.getSubject(), s.getPredicate(), s.getObject()));
         triples.stream().map(tripleConverter::convert).map(jenaStatements::asStatement).forEach(jenaStatements::add);
 
-       
+
         // add them to our triplestore via our SPARQL Update connector
         final TriplestoreWriter writer = sparqlConnector.getWriter();
         // this is a SPARQL-only connector
@@ -152,7 +154,7 @@ public class DirectIT extends IT {
         sparqlConnector.close();
     }
 
-    private static Triple createTriple(Resource s, URI p, Value o) {
+    private static Triple createTriple(final Resource s, final URI p, final Value o) {
         try {
             return RDFFactories.createTriple(s, p, o);
         } catch (GraphElementFactoryException | URISyntaxException e) {
@@ -169,5 +171,4 @@ public class DirectIT extends IT {
                     "<info:subject2> <info:predicate2> \"Chrysophylax\"^^<http://www.example.com/dives> .\n" +
                     "<info:subject3>  <info:predicate3> \"Shalom!\"@he .\n" +
                     "<info:subject4>  <info:predicate4> \"Oingoboingo\" .\n";
-
 }

@@ -94,19 +94,23 @@ public class SparqlSession implements TriplestoreSession {
 
     private final String graphName;
 
+    private final boolean readOnly;
+
     /**
      * Default constructor.
      *
      * @param updateExecutor the service against which to execute SPARQL Update requests
      * @param queryExecutor the service against which to execute SPARQL Query non-CONSTRUCT requests
      * @param constructExecutor the service against which to execute SPARQL Query CONSTRUCT requests
+     * @param readOnly whether this is a read-only session
      */
     public SparqlSession(final Consumer<UpdateRequest> updateExecutor, final Function<Query, ResultSet> queryExecutor,
-                    final Function<Query, Model> constructExecutor, final Node gN) {
+                    final Function<Query, Model> constructExecutor, final Node gN, final boolean readOnly) {
         this.updateExecutor = updateExecutor;
         this.queryExecutor = queryExecutor;
         this.constructExecutor = constructExecutor;
         this.graphName = stringForNode(gN);
+        this.readOnly = readOnly;
     }
 
     @Override
@@ -128,6 +132,7 @@ public class SparqlSession implements TriplestoreSession {
      * @param operation the type of mutating operation to perform
      */
     private void mutate(final Set<org.jrdf.graph.Triple> triples, final Operation operation) {
+        if (readOnly) return;
         final Iterable<Triple> trips = from(triples).transform(tripleConverter::convert);
         final String datablock = datablock(trips);
         final String payload = rebase(format("%1$s DATA { GRAPH %2$s { %3$s } . }", operation, graphName, datablock));
@@ -198,8 +203,17 @@ public class SparqlSession implements TriplestoreSession {
      * @throws TrippiException
      */
     private static void checkLang(final String lang) throws TrippiException {
-        if (!lang.toLowerCase().contains("sparql")) throw new TrippiException("This Trippi connector uses only SPARQL!",
-                        new UnsupportedOperationException("This Trippi connector uses only SPARQL!"));
+        if (!lang.toLowerCase().contains("sparql"))
+            throw new UnsupportedLanguageException("This Trippi connector uses only SPARQL!");
+    }
+
+    public static class UnsupportedLanguageException extends TrippiException {
+
+        private static final long serialVersionUID = 1L;
+
+        public UnsupportedLanguageException(final String message) {
+            super(message);
+        }
     }
 
     @Override
