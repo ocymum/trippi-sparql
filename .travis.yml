@@ -1,6 +1,5 @@
 language: java
 sudo: false
-install: mvn dependency:go-offline
 script: mvn install
 jdk:
   - oraclejdk8
