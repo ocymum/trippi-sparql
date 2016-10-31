@@ -35,35 +35,24 @@ import static org.apache.jena.graph.NodeFactory.createURI;
 import static org.apache.jena.query.QueryExecutionFactory.sparqlService;
 import static org.apache.jena.rdf.model.ModelFactory.createDefaultModel;
 import static org.apache.jena.sparql.util.FmtUtils.stringForNode;
-import static org.openrdf.rio.RDFFormat.NTRIPLES;
-import static org.openrdf.rio.Rio.createParser;
 import static org.trippi.TripleMaker.createResource;
 
-import java.io.Reader;
+import java.io.IOException;
 import java.io.StringReader;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.jena.rdf.model.Model;
-import org.jrdf.graph.GraphElementFactoryException;
 import org.jrdf.graph.Node;
 import org.jrdf.graph.Triple;
 import org.junit.Test;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.rio.RDFParser;
-import org.openrdf.rio.helpers.StatementCollector;
 import org.trippi.TriplestoreReader;
 import org.trippi.TriplestoreWriter;
 import org.trippi.TrippiException;
 import org.trippi.TupleIterator;
-import org.trippi.impl.RDFFactories;
 
 import edu.si.trippi.impl.sparql.SparqlConnector;
+import edu.si.trippi.impl.sparql.SparqlSession.UnsupportedLanguageException;
 
 /**
  * Tests of interaction directly between this Trippi implementation and a SPARQL endpoint. (Eliding Fedora.) This
@@ -80,9 +69,15 @@ public class DirectIT extends IT {
      */
     private static final String DATASET_NAME = "direct";
 
+    /**
+     * The read-only dataset to work with.
+     */
+    private static final String READONLY_DATASET_NAME = "readOnlyTests";
+
     private static final String graphName = stringForNode(createURI("#test"));
 
-    private static final String ALL_TRIPLES = rebase("CONSTRUCT { ?s ?p ?o } WHERE { GRAPH " + graphName + " { ?s ?p ?o } . }");
+    private static final String ALL_TRIPLES =
+                    rebase("CONSTRUCT { ?s ?p ?o } WHERE { GRAPH " + graphName + " { ?s ?p ?o } . }");
 
     @Test
     public void testNormalOperation() throws Exception {
@@ -92,30 +87,19 @@ public class DirectIT extends IT {
         // configure our SPARQL-based Trippi connector
         final SparqlConnector sparqlConnector = new SparqlConnector();
         final String datasetUrl = fusekiUrl + DATASET_NAME;
-        sparqlConnector.setConfiguration(of("updateEndpoint", datasetUrl + "/update", "queryEndpoint", datasetUrl +
-                        "/query", "graphName", "#test"));
-        
+        final String queryService = datasetUrl + "/query";
+        final String updateService = datasetUrl + "/update";
+        sparqlConnector.setConfiguration(
+                        of("updateEndpoint", updateService, "queryEndpoint", queryService, "graphName", "#test"));
+
         final TriplestoreReader reader = sparqlConnector.getReader();
         try {
             reader.countTriples("itql", "", 0, false);
             fail("This connector should not accept iTQL queries!");
-        } catch (final TrippiException e) {/** Expected. **/
+        } catch (final TrippiException e) {
+            assertTrue("Should not accept iTQL queries! ", e instanceof UnsupportedLanguageException);
         }
 
-        // load some simple sample triples
-        final List<Triple> triples = new ArrayList<>();
-        final RDFParser parser = createParser(NTRIPLES);
-        final StatementCollector handler = new StatementCollector();
-        parser.setRDFHandler(handler);
-        try (Reader rdf = new StringReader(testData)) {
-            parser.parse(rdf, "");
-        }
-        final Model jenaStatements = createDefaultModel();
-        for (final Statement s : handler.getStatements())
-            triples.add(createTriple(s.getSubject(), s.getPredicate(), s.getObject()));
-        triples.stream().map(tripleConverter::convert).map(jenaStatements::asStatement).forEach(jenaStatements::add);
-
-       
         // add them to our triplestore via our SPARQL Update connector
         final TriplestoreWriter writer = sparqlConnector.getWriter();
         // this is a SPARQL-only connector
@@ -124,13 +108,12 @@ public class DirectIT extends IT {
         writer.add(triples, true);
 
         // check that they were all added
-        Model results = sparqlService(datasetUrl + "/query", ALL_TRIPLES).execConstruct();
+        Model results = sparqlService(queryService, ALL_TRIPLES).execConstruct();
         assertTrue("Failed to discover the triples we stored!", results.containsAll(jenaStatements));
 
         // check that we can query them via our connector
         assertEquals(1, reader.countTriples(createResource("info:subject4"), null, null, 0));
-        String tupleQuery =
-                        "CONSTRUCT { <info:subject2> ?p ?o } WHERE { GRAPH <#test> { <info:subject2> ?p ?o } . }";
+        String tupleQuery = "CONSTRUCT { <info:subject2> ?p ?o } WHERE { GRAPH <#test> { <info:subject2> ?p ?o } . }";
         assertEquals(2, reader.findTriples("sparql", tupleQuery, 0, true).count());
         assertEquals(1, reader.countTriples(createResource("info:subject1"), null, null, 0));
         tupleQuery = "SELECT ?s WHERE { GRAPH <#test> {?s <info:predicate3> _:o } . }";
@@ -146,18 +129,51 @@ public class DirectIT extends IT {
         writer.delete(triples, true);
 
         // check that they were all removed
-        results = sparqlService(datasetUrl + "/query", ALL_TRIPLES).execConstruct();
+        results = sparqlService(queryService, ALL_TRIPLES).execConstruct();
         assertFalse(results.containsAny(jenaStatements));
 
         sparqlConnector.close();
     }
 
-    private static Triple createTriple(Resource s, URI p, Value o) {
-        try {
-            return RDFFactories.createTriple(s, p, o);
-        } catch (GraphElementFactoryException | URISyntaxException e) {
-            throw new AssertionError(e);
-        }
+    @Test
+    public void readOnlyOperation() throws TrippiException, IOException {
+        final String fusekiUrl = "http://localhost:" + PORT + "/jena-fuseki-war/";
+
+        // writer
+        final SparqlConnector sparqlConnector = new SparqlConnector();
+        final String datasetUrl = fusekiUrl + READONLY_DATASET_NAME;
+        final String queryService = datasetUrl + "/query";
+        final String updateService = datasetUrl + "/update";
+        sparqlConnector.setConfiguration(
+                        of("updateEndpoint", updateService, "queryEndpoint", queryService, "graphName", "#test"));
+        final TriplestoreWriter writer = sparqlConnector.getWriter();
+        // read-only "writer"
+        final SparqlConnector readOnlysparqlConnector = new SparqlConnector();
+        readOnlysparqlConnector.setConfiguration(of("updateEndpoint", updateService, "queryEndpoint", queryService,
+                        "graphName", "#test", "readOnly", "true"));
+        final TriplestoreWriter readOnlywriter = readOnlysparqlConnector.getWriter();
+        // should not do anything
+        readOnlywriter.add(triples, true);
+        // check that they were all added
+        Model results = sparqlService(queryService, ALL_TRIPLES).execConstruct();
+        assertTrue("Should not be able to write with a read-only session!", results.isEmpty());
+        writer.add(triples, true);
+        // now they really should have been added
+        results = sparqlService(queryService, ALL_TRIPLES).execConstruct();
+        assertTrue("Failed to discover the triples we stored!", results.containsAll(jenaStatements));
+        // should not do anything
+        readOnlywriter.delete(triples, true);
+        // now they should still be there
+        results = sparqlService(queryService, ALL_TRIPLES).execConstruct();
+        assertTrue("Should not be able to delete with a read-only session!", results.containsAll(jenaStatements));
+        // should really remove them
+        writer.delete(triples, true);
+        // now they should really be gone
+        results = sparqlService(queryService, ALL_TRIPLES).execConstruct();
+        assertTrue("Should be able to delete with an ordinary session!", results.isEmpty());
+
+        sparqlConnector.close();
+        readOnlysparqlConnector.close();
     }
 
     /**
@@ -170,4 +186,17 @@ public class DirectIT extends IT {
                     "<info:subject3>  <info:predicate3> \"Shalom!\"@he .\n" +
                     "<info:subject4>  <info:predicate4> \"Oingoboingo\" .\n";
 
+    private static final Model jenaStatements = createDefaultModel();
+
+    private static final List<Triple> triples;
+
+    static {
+        try (final StringReader rdf = new StringReader(testData)) {
+            jenaStatements.read(rdf, null, "N-TRIPLE");
+        }
+        triples = jenaStatements.listStatements()
+                        .mapWith(org.apache.jena.rdf.model.Statement::asTriple)
+                        .mapWith(tripleConverter.reverse()::convert)
+                        .toList();
+    }
 }

@@ -111,13 +111,11 @@ public class SparqlSession implements TriplestoreSession {
 
     @Override
     public void add(final Set<org.jrdf.graph.Triple> triples) {
-        log.debug("Adding triples: {}", triples);
         mutate(triples, INSERT);
     }
 
     @Override
     public void delete(final Set<org.jrdf.graph.Triple> triples) {
-        log.debug("Deleting triples: {}", triples);
         mutate(triples, DELETE);
     }
 
@@ -127,7 +125,8 @@ public class SparqlSession implements TriplestoreSession {
      * @param triples the triples with which to perform the operation
      * @param operation the type of mutating operation to perform
      */
-    private void mutate(final Set<org.jrdf.graph.Triple> triples, final Operation operation) {
+    protected void mutate(final Set<org.jrdf.graph.Triple> triples, final Operation operation) {
+        log.debug(operation + " for triples: {}", triples);
         final Iterable<Triple> trips = from(triples).transform(tripleConverter::convert);
         final String datablock = datablock(trips);
         final String payload = rebase(format("%1$s DATA { GRAPH %2$s { %3$s } . }", operation, graphName, datablock));
@@ -198,8 +197,17 @@ public class SparqlSession implements TriplestoreSession {
      * @throws TrippiException
      */
     private static void checkLang(final String lang) throws TrippiException {
-        if (!lang.toLowerCase().contains("sparql")) throw new TrippiException("This Trippi connector uses only SPARQL!",
-                        new UnsupportedOperationException("This Trippi connector uses only SPARQL!"));
+        if (!lang.toLowerCase().contains("sparql"))
+            throw new UnsupportedLanguageException("This Trippi connector uses only SPARQL!");
+    }
+
+    public static class UnsupportedLanguageException extends TrippiException {
+
+        private static final long serialVersionUID = 1L;
+
+        public UnsupportedLanguageException(final String message) {
+            super(message);
+        }
     }
 
     @Override
@@ -211,5 +219,24 @@ public class SparqlSession implements TriplestoreSession {
         final String triplePattern = format(" { %1$s %2$s %3$s} ", s, p, o);
         final String queryText = format("CONSTRUCT %1$s WHERE { GRAPH %2$s %1$s . }", triplePattern, graphName);
         return findTriples("sparql", queryText);
+    }
+
+    public static class ReadOnlySparqlSession extends SparqlSession {
+
+        public ReadOnlySparqlSession(final Consumer<UpdateRequest> updateExecutor, final Function<Query, ResultSet> queryExecutor,
+                        final Function<Query, Model> constructExecutor, final Node gN) {
+            super(updateExecutor, queryExecutor, constructExecutor, gN);
+        }
+
+        /*
+         * No-op override.
+         *
+         * (non-Javadoc)
+         * @see edu.si.trippi.impl.sparql.SparqlSession#mutate(java.util.Set, edu.si.trippi.impl.sparql.SparqlSession.Operation)
+         */
+        @Override
+        protected void mutate(final Set<org.jrdf.graph.Triple> triples, final Operation operation) {
+            return;
+        }
     }
 }

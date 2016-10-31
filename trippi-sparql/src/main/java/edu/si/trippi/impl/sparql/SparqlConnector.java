@@ -28,6 +28,7 @@
 
 package edu.si.trippi.impl.sparql;
 
+import static java.lang.Boolean.parseBoolean;
 import static java.lang.Integer.parseInt;
 import static java.lang.String.format;
 import static org.apache.jena.graph.NodeFactory.createURI;
@@ -69,11 +70,11 @@ public class SparqlConnector extends TriplestoreConnector {
     /**
      * In order to resolve relative URIs in a repeatable way, this method should always be used to provide a BASE_URI
      * declaration.
-     * 
+     *
      * @param text a SPARQL Query or Update passage
      * @return the same test with a BASE_URI declaration prefixed
      */
-    public static String rebase(String text) {
+    public static String rebase(final String text) {
         return format("BASE <" + BASE_URI + ">\n%1$s", text);
     }
 
@@ -155,6 +156,8 @@ public class SparqlConnector extends TriplestoreConnector {
                         DEFAULT_AUTO_FLUSH_BUFFER_SIZE));
         final int autoFlushDormantSeconds = parseInt(config.getOrDefault("autoFlushDormantSeconds",
                         DEFAULT_AUTO_FLUSH_DORMANT_SECONDS));
+        final boolean readOnly = parseBoolean(config.getOrDefault("readOnly", "false"));
+        log.info("This is {}a read-only connector.", readOnly ? "" : "not ");
         final String updateEndpoint = config.get("updateEndpoint");
         log.info("Using update endpoint {}", updateEndpoint);
         final String queryEndpoint = config.getOrDefault("queryEndpoint", updateEndpoint);
@@ -167,7 +170,7 @@ public class SparqlConnector extends TriplestoreConnector {
         if (factory != null) {
             factory.close();
         }
-        factory = new SparqlSessionFactory(updateEndpoint, queryEndpoint, constructEndpoint, graphName);
+        factory = new SparqlSessionFactory(updateEndpoint, queryEndpoint, constructEndpoint, graphName, readOnly);
 
         final PoolingClientConnectionManager connectionManager = new PoolingClientConnectionManager();
         final int maxConnections = parseInt(config.getOrDefault("maxHttpConnections", DEFAULT_MAX_HTTP_CONNECTIONS));

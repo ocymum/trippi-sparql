@@ -30,7 +30,7 @@ package edu.si.trippi.impl.sparql;
 
 import static org.apache.jena.query.QueryExecutionFactory.sparqlService;
 import static org.apache.jena.update.UpdateExecutionFactory.createRemote;
-
+import edu.si.trippi.impl.sparql.SparqlSession.ReadOnlySparqlSession;
 import org.apache.jena.graph.Node;
 import org.trippi.impl.base.TriplestoreSessionFactory;
 
@@ -46,26 +46,34 @@ public class SparqlSessionFactory implements TriplestoreSessionFactory {
     private final String updateEndpoint, queryEndpoint, constructEndpoint;
 
     private Node graphName;
-    
+
+    private boolean readOnly;
+
     /**
      * Full constructor.
      *
      * @param updateEndpoint the SPARQL Update endpoint against which to act
      * @param queryEndpoint the SPARQL Query endpoint against which to act for non-CONSTRUCT queries
      * @param constructEndpoint the SPARQL Query endpoint against which to act for CONSTRUCT queries
+     * @param readOnly whether this factory creates read-only sessions
      */
     public SparqlSessionFactory(final String updateEndpoint, final String queryEndpoint,
-            final String constructEndpoint, final Node gN) {
+            final String constructEndpoint, final Node gN, final boolean readOnly) {
         this.updateEndpoint = updateEndpoint;
         this.queryEndpoint = queryEndpoint;
         this.constructEndpoint = constructEndpoint;
         this.graphName = gN;
+        this.readOnly = readOnly;
     }
 
     @Override
     public SparqlSession newSession() {
-        return new SparqlSession(u -> createRemote(u, updateEndpoint).execute(), q -> sparqlService(queryEndpoint, q)
-                .execSelect(), c -> sparqlService(constructEndpoint, c).execConstruct(), graphName);
+        return readOnly ? new ReadOnlySparqlSession(u -> createRemote(u, updateEndpoint).execute(),
+                        q -> sparqlService(queryEndpoint, q).execSelect(),
+                        c -> sparqlService(constructEndpoint, c).execConstruct(), graphName)
+                        : new SparqlSession(u -> createRemote(u, updateEndpoint).execute(),
+                        q -> sparqlService(queryEndpoint, q).execSelect(),
+                        c -> sparqlService(constructEndpoint, c).execConstruct(), graphName);
     }
 
     @Override
