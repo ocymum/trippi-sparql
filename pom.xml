@@ -41,6 +41,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <fedora.version>3.8.1</fedora.version>
+        <fuseki.version>2.3.1</fuseki.version>
+        <jena.version>3.1.0</jena.version>
     </properties>
 
     <developers>
@@ -72,10 +75,32 @@
         <connection>scm:git:git://github.com/Smithsonian/trippi-sparql.git</connection>
         <url>scm:git:git://github.com/Smithsonian/trippi-sparql.git</url>
       <tag>HEAD</tag>
-  </scm>
+    </scm>
+    
+    <repositories>
+      <repository>
+        <id>Duraspace</id>
+        <name>Duraspace-maintained cache of Central</name>
+        <url>https://m2.duraspace.org/content/repositories/central</url>
+        <releases>
+          <enabled>true</enabled>
+        </releases>
+        <snapshots>
+          <enabled>false</enabled>
+        </snapshots>
+      </repository>
+    </repositories>
 
     <dependencyManagement>
         <dependencies>
+        
+            <dependency>
+              <groupId>org.fcrepo</groupId>
+              <artifactId>fcrepo-webapp-fedora</artifactId>
+              <version>${fedora.version}</version>
+              <type>war</type>
+            </dependency>
+
             <dependency>
                 <groupId>com.google.collections</groupId>
                 <artifactId>google-collections</artifactId>
@@ -85,7 +110,7 @@
             <dependency>
                 <groupId>org.apache.jena</groupId>
                 <artifactId>jena-arq</artifactId>
-                <version>3.1.0</version>
+                <version>${jena.version}</version>
             </dependency>
 
             <dependency>
@@ -98,6 +123,13 @@
                 <groupId>org.trippi</groupId>
                 <artifactId>trippi-core</artifactId>
                 <version>1.5.10</version>
+            </dependency>
+            <dependency>
+              <groupId>org.apache.jena</groupId>
+              <artifactId>jena-fuseki-war</artifactId>
+              <version>${fuseki.version}</version>
+              <type>war</type>
+              <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -132,6 +164,37 @@
                         <goals>deploy</goals>
                     </configuration>
                 </plugin>
+                <plugin>
+                  <artifactId>maven-surefire-plugin</artifactId>
+                  <version>2.19.1</version>
+                  <configuration>
+                    <parallel>methods</parallel>
+                    <threadCount>4</threadCount>
+                  </configuration>
+                </plugin>
+                <plugin>
+                  <artifactId>maven-failsafe-plugin</artifactId>
+                  <version>2.18.1</version>
+                </plugin>
+                <plugin>
+                  <groupId>org.codehaus.mojo</groupId>
+                  <artifactId>build-helper-maven-plugin</artifactId>
+                  <version>1.9.1</version>
+                </plugin>
+                <plugin>
+                  <groupId>org.codehaus.cargo</groupId>
+                  <artifactId>cargo-maven2-plugin</artifactId>
+                  <version>1.4.15</version>
+                </plugin>
+                <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-shade-plugin</artifactId>
+                  <version>2.4.3</version>
+                </plugin>
+                <plugin>
+                  <artifactId>maven-war-plugin</artifactId>
+                  <version>2.6</version>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -144,7 +207,11 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>versions-maven-plugin</artifactId>
+              <version>2.2</version>
+            </plugin>
             <plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
