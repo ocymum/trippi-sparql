@@ -34,7 +34,6 @@
     <dependency>
       <groupId>org.apache.jena</groupId>
       <artifactId>jena-fuseki-war</artifactId>
-      <version>2.3.1</version>
       <type>war</type>
       <scope>test</scope>
       <exclusions>
@@ -73,7 +72,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.9.1</version>
         <configuration>
           <portNames>
             <portName>dynamic.test.port</portName>
@@ -93,7 +91,6 @@
 
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.18.1</version>
         <configuration>
           <parallel>methods</parallel>
           <threadCount>4</threadCount>
@@ -115,7 +112,6 @@
       <plugin>
         <groupId>org.codehaus.cargo</groupId>
         <artifactId>cargo-maven2-plugin</artifactId>
-        <version>1.4.15</version>
         <configuration>
           <container>
             <containerId>tomcat8x</containerId>
