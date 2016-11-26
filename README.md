@@ -5,7 +5,7 @@ To build (requires Java 8):
     cd trippi-sparql ; mvn clean install
 
 This will result in a large `trippi-sparql-*.jar` JAR in the `trippi-sparql/trippi-sparql/target/` directory which contains the connector and its dependencies, and a `trippi-sparql-fcrepo-webapp-*.war` WAR in `trippi-sparql/trippi-sparql-fcrepo-webapp/target` . To use this connector with Fedora 3, this large JAR can be dropped into the `WEB-INF/lib/` directory of a Fedora 3 web-application, or the WAR file can be used (it is simply the ordinary Fedora 3 web-application with the JAR pre-installed). Then, a `<datastore/>` element must be configured in `fedora.fcfg`. An example is shown below featuring the various parameters available. For each parameter except `connectorClassName` and `updateEndpoint`, a default will be used if no `<param/>` element for that parameter is supplied. The default value for each parameter will be the value shown in the example below, except that the default for the SPARQL CONSTRUCT Query endpoint is just the ordinary SPARQL Query endpoint, and the default for the ordinary SPARQL Query endpoint is the SPARQL Update endpoint.
-The default for `graphName` is as shown, but users should be aware that any relative URI used there (the default `#ri` is as used by Fedora 3's Mulgara configuration) will be resolved against a static base URI stored in the constant `edu.si.trippi.impl.sparql.SparqlConnector.BASE_URI`. Queries transmitted through Fedora's Resource Index API will be automatically  equipped with an appropriate BASE declaration, but otherwise, clients are responsible for ensuring that the base URI is used correctly. A convenience method `SparqlConnector::rebase` is available for the purpose.
+The default for `graphName` is as shown, but users should be aware that any relative URI used there (the default `#ri` is as used by Fedora 3's Mulgara configuration) will be resolved against a base URI configured in the parameter `uriBase` with default as shown below. Queries transmitted through Fedora's Resource Index API will be automatically  equipped with an appropriate BASE declaration, but otherwise, clients that use the SPARQL endpoints directly are responsible for ensuring that the base URI is used correctly. A convenience method `SparqlConnector::rebase` is available for the purpose.
 
 
     <datastore id="sparqlTriplestore">
@@ -18,6 +18,9 @@ The default for `graphName` is as shown, but users should be aware that any rela
         </param>
         <param name="graphName" value="#ri">
             <comment>The URI of the named graph in which triples will be managed.</comment>
+        </param>
+        <param name="uriBase" value="info:edu.si.fedora">
+            <comment>The base that will be used to resolve a graph name that is a relative URI.</comment>
         </param>
         <param name="maxHttpConnections" value="10">
             <comment>The maximum number of clients in the HTTP client pool used for SPARQL Update requests.</comment>
