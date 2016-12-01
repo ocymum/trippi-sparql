@@ -90,6 +90,12 @@ public class SparqlConnector extends TriplestoreConnector {
 
     public static final String DEFAULT_MAX_HTTP_CONNECTIONS = "10";
 
+	private static final String DEFAULT_MAX_GROWTH = "-1";
+
+	private static final String DEFAULT_INITIAL_SIZE = "3";
+
+	private static final String DEFAULT_SPARE_SESSIONS = "1";
+
     private Map<String, String> config;
 
     private SparqlSessionFactory factory;
@@ -186,7 +192,14 @@ public class SparqlConnector extends TriplestoreConnector {
             tripleIteratorFactory = new TripleIteratorFactory();
         }
 
-        final ConfigurableSessionPool pool = new ConfigurableSessionPool(factory, 1, 5, 1);
+		final int initialSize = parseInt(config.getOrDefault("initialSize", DEFAULT_INITIAL_SIZE));
+		log.info("Using Trippi connection pool with initial size of {}", initialSize);
+        final int maxGrowth = parseInt(config.getOrDefault("maxGrowth", DEFAULT_MAX_GROWTH));
+        log.info("Using Trippi connection pool with maximum growth of {}", maxGrowth);
+		final int spareSessions = parseInt(config.getOrDefault("spareSessions", DEFAULT_SPARE_SESSIONS));
+        log.info("Using Trippi connection pool with {} spare session(s)", spareSessions);
+        
+		final ConfigurableSessionPool pool = new ConfigurableSessionPool(factory, initialSize, maxGrowth, spareSessions);
         final UpdateBuffer buffer = new MemUpdateBuffer(bufferFlushBatchSize, bufferSafeCapacity);
         try {
             writer = new ConcurrentTriplestoreWriter(pool, new DefaultAliasManager(), factory.newSession(), buffer,
