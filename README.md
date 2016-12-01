@@ -25,6 +25,15 @@ The default for `graphName` is as shown, but users should be aware that any rela
         <param name="maxHttpConnections" value="10">
             <comment>The maximum number of clients in the HTTP client pool used for SPARQL Update requests.</comment>
         </param>
+        <param name="initialTripleStorePoolSize" value="3">
+            <comment>The initial number of sessions in the triplestore pool.</comment>
+        </param>
+        <param name="maxTripleStorePoolGrowth" value="-1">
+            <comment>The maximum number of additional sessions to add to the triplestore pool. If specified as -1, no limit will be placed on pool growth.</comment>
+        </param>
+        <param name="spareTripleStorePool" value="1">
+            <comment>The number of spare sessions to maintain in the triplestore pool.</comment>
+        </param>
         <param name="updateEndpoint" value="http://localhost:3030/fuseki/update">
             <comment>The URL of a SPARQL Update endpoint for the triplestore to be used with this connector.</comment>
         </param>
