@@ -43,11 +43,13 @@ import static org.apache.jena.sparql.util.FmtUtils.stringForNode;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import org.apache.jena.ext.com.google.common.net.PercentEscaper;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.riot.web.HttpOp;
 import org.junit.Test;
 
 public class FedoraIT extends IT {
@@ -74,7 +76,8 @@ public class FedoraIT extends IT {
     public void testSystemObjectTriples() {
         systemObjectNames.forEach(name -> {
             Model triples = triplesForObjectName(name);
-            final Property ownerId = triples.createProperty("<info:fedora/fedora-system:def/model#ownerId>");
+            // this assignment implicitly tests for fedora-model: default prefix mapping
+            final Property ownerId = triples.createProperty("fedora-model:ownerId");
             triples.listObjectsOfProperty(name, ownerId).forEachRemaining(o -> assertEquals(admin, o));
         });
     }
@@ -87,7 +90,17 @@ public class FedoraIT extends IT {
         // find some triples for it
         Model triples = triplesForObjectName(testObjectName);
         // check that a few appropriate triples have been indexed
-        final Property ownerId = triples.createProperty("<info:fedora/fedora-system:def/model#ownerId>");
+
+        // use a test query with default prefix mapping assumed for DC
+        String testQuery = "SELECT ?label FROM " + graphName + "WHERE { <info:fedora/test:1> dc:identifier ?label } ";
+        String escapedTestQuery = new PercentEscaper("", false).escape(testQuery);
+        String dcIdentifierResult = HttpOp.execHttpGetString(
+                        FEDORA_URI + "/risearch?type=tuples&lang=sparql&format=Sparql&query=" + escapedTestQuery);
+        // TODO stronger assertion that respects SPARQL Result format
+        assertTrue("Wrong dc:identifier for test object!", dcIdentifierResult.contains("<label>test:1</label>"));
+
+        // this test implicitly tests for fedora-model: default prefix mapping
+        final Property ownerId = triples.createProperty("fedora-model:ownerId");
         triples.listObjectsOfProperty(testObjectName, ownerId).forEachRemaining(o -> assertEquals(admin, o));
         // delete the test object
         execHttpDelete(FEDORA_URI + "/objects/test:1");
@@ -98,8 +111,8 @@ public class FedoraIT extends IT {
 
     private static Model triplesForObjectName(final Resource r) {
         try {
-            final String queryString = "CONSTRUCT { " + r + " ?p ?o } WHERE { GRAPH " + graphName + " { " + r +
-                            " ?p ?o } . }";
+            final String queryString = "CONSTRUCT { " + r + " ?p ?o } WHERE { GRAPH " + graphName + " { " + r
+                            + " ?p ?o } . }";
             final String query = encode(queryString, "UTF8");
             final String queryUri = RI_URI + "?type=triples&lang=sparql&format=N-Triples&query=" + query;
             return loadModel(queryUri, NTRIPLES);
