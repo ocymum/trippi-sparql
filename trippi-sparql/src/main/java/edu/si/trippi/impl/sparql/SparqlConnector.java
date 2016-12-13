@@ -65,6 +65,13 @@ public class SparqlConnector extends TriplestoreConnector {
 
     private static final Logger log = getLogger(SparqlConnector.class);
 
+    private static final String DEFAULT_PREFIXES_DECLARATIONS = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
+                    + "PREFIX fedora-model: <info:fedora/fedora-system:def/model#>\n"
+                    + "PREFIX fedora-view: <info:fedora/fedora-system:def/view#>\n"
+                    + "PREFIX fedora-rels-ext: <info:fedora/fedora-system:def/relations-external#>\n"
+                    + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n"
+                    + "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n";
+
     public static String DEFAULT_URI_BASE = "info:edu.si.fedora";
 
     public static String uriBase;
@@ -74,10 +81,10 @@ public class SparqlConnector extends TriplestoreConnector {
      * declaration.
      *
      * @param text a SPARQL Query or Update passage
-     * @return the same test with a BASE_URI declaration prefixed
+     * @return the same test with a BASE_URI declaration prefixed and default prefix mappings provided
      */
     public static String rebase(final String text) {
-        return format("BASE <" + uriBase + ">\n%1$s", text);
+        return format("BASE <" + uriBase + ">\n" + DEFAULT_PREFIXES_DECLARATIONS + "%1$s", text);
     }
 
     public static final String DEFAULT_BUFFER_FLUSH_BATCH_SIZE = "20000";
@@ -90,11 +97,11 @@ public class SparqlConnector extends TriplestoreConnector {
 
     public static final String DEFAULT_MAX_HTTP_CONNECTIONS = "10";
 
-	private static final String DEFAULT_MAX_GROWTH = "-1";
+    private static final String DEFAULT_MAX_GROWTH = "-1";
 
-	private static final String DEFAULT_INITIAL_SIZE = "3";
+    private static final String DEFAULT_INITIAL_SIZE = "3";
 
-	private static final String DEFAULT_SPARE_SESSIONS = "1";
+    private static final String DEFAULT_SPARE_SESSIONS = "1";
 
     private Map<String, String> config;
 
@@ -156,14 +163,14 @@ public class SparqlConnector extends TriplestoreConnector {
         if (writer != null) {
             writer.close();
         }
-        final int bufferFlushBatchSize = parseInt(config.getOrDefault("bufferFlushBatchSize",
-                        DEFAULT_BUFFER_FLUSH_BATCH_SIZE));
-        final int bufferSafeCapacity = parseInt(config.getOrDefault("bufferSafeCapacity",
-                        DEFAULT_BUFFER_SAFE_CAPACITY));
-        final int autoFlushBufferSize = parseInt(config.getOrDefault("autoFlushBufferSize",
-                        DEFAULT_AUTO_FLUSH_BUFFER_SIZE));
-        final int autoFlushDormantSeconds = parseInt(config.getOrDefault("autoFlushDormantSeconds",
-                        DEFAULT_AUTO_FLUSH_DORMANT_SECONDS));
+        final int bufferFlushBatchSize = parseInt(
+                        config.getOrDefault("bufferFlushBatchSize", DEFAULT_BUFFER_FLUSH_BATCH_SIZE));
+        final int bufferSafeCapacity = parseInt(
+                        config.getOrDefault("bufferSafeCapacity", DEFAULT_BUFFER_SAFE_CAPACITY));
+        final int autoFlushBufferSize = parseInt(
+                        config.getOrDefault("autoFlushBufferSize", DEFAULT_AUTO_FLUSH_BUFFER_SIZE));
+        final int autoFlushDormantSeconds = parseInt(
+                        config.getOrDefault("autoFlushDormantSeconds", DEFAULT_AUTO_FLUSH_DORMANT_SECONDS));
         final boolean readOnly = parseBoolean(config.getOrDefault("readOnly", "false"));
         log.info("This is {}a read-only connector.", readOnly ? "" : "not ");
         final String updateEndpoint = config.get("updateEndpoint");
@@ -193,13 +200,14 @@ public class SparqlConnector extends TriplestoreConnector {
         }
 
         final int initialSize = parseInt(config.getOrDefault("initialTripleStorePoolSize", DEFAULT_INITIAL_SIZE));
-		log.info("Using Trippi connection pool with initial size of {}", initialSize);
+        log.info("Using Trippi connection pool with initial size of {}", initialSize);
         final int maxGrowth = parseInt(config.getOrDefault("maxTripleStorePoolGrowth", DEFAULT_MAX_GROWTH));
         log.info("Using Trippi connection pool with maximum growth of {}", maxGrowth);
         final int spareSessions = parseInt(config.getOrDefault("spareTripleStorePool", DEFAULT_SPARE_SESSIONS));
         log.info("Using Trippi connection pool with {} spare session(s)", spareSessions);
 
-		final ConfigurableSessionPool pool = new ConfigurableSessionPool(factory, initialSize, maxGrowth, spareSessions);
+        final ConfigurableSessionPool pool = new ConfigurableSessionPool(factory, initialSize, maxGrowth,
+                        spareSessions);
         final UpdateBuffer buffer = new MemUpdateBuffer(bufferFlushBatchSize, bufferSafeCapacity);
         try {
             writer = new ConcurrentTriplestoreWriter(pool, new DefaultAliasManager(), factory.newSession(), buffer,
