@@ -181,7 +181,7 @@ public class SparqlConnector extends TriplestoreConnector {
         log.info("Using construct endpoint {}", constructEndpoint);
         final Node graphName = createURI(config.getOrDefault("graphName", "#ri"));
         log.info("Using graph name {}", stringForNode(graphName));
-        final String uriBase = config.getOrDefault("uriBase", DEFAULT_URI_BASE);
+        uriBase = config.getOrDefault("uriBase", DEFAULT_URI_BASE);
         log.info("Using URI base {}", uriBase);
 
         if (factory != null) {
