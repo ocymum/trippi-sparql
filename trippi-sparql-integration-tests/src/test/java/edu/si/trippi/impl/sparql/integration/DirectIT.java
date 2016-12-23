@@ -76,8 +76,9 @@ public class DirectIT extends IT {
 
     private static final String graphName = stringForNode(createURI("#test"));
 
-    private static final String ALL_TRIPLES =
-                    rebase("CONSTRUCT { ?s ?p ?o } WHERE { GRAPH " + graphName + " { ?s ?p ?o } . }");
+    private static final String ALL_TRIPLES() {
+        return rebase("CONSTRUCT { ?s ?p ?o } WHERE { GRAPH " + graphName + " { ?s ?p ?o } . }");
+    }
 
     @Test
     public void testNormalOperation() throws Exception {
@@ -108,7 +109,7 @@ public class DirectIT extends IT {
         writer.add(triples, true);
 
         // check that they were all added
-        Model results = sparqlService(queryService, ALL_TRIPLES).execConstruct();
+        Model results = sparqlService(queryService, ALL_TRIPLES()).execConstruct();
         assertTrue("Failed to discover the triples we stored!", results.containsAll(jenaStatements));
 
         // check that we can query them via our connector
@@ -129,7 +130,7 @@ public class DirectIT extends IT {
         writer.delete(triples, true);
 
         // check that they were all removed
-        results = sparqlService(queryService, ALL_TRIPLES).execConstruct();
+        results = sparqlService(queryService, ALL_TRIPLES()).execConstruct();
         assertFalse(results.containsAny(jenaStatements));
 
         sparqlConnector.close();
@@ -155,21 +156,21 @@ public class DirectIT extends IT {
         // should not do anything
         readOnlywriter.add(triples, true);
         // check that they were all added
-        Model results = sparqlService(queryService, ALL_TRIPLES).execConstruct();
+        Model results = sparqlService(queryService, ALL_TRIPLES()).execConstruct();
         assertTrue("Should not be able to write with a read-only session!", results.isEmpty());
         writer.add(triples, true);
         // now they really should have been added
-        results = sparqlService(queryService, ALL_TRIPLES).execConstruct();
+        results = sparqlService(queryService, ALL_TRIPLES()).execConstruct();
         assertTrue("Failed to discover the triples we stored!", results.containsAll(jenaStatements));
         // should not do anything
         readOnlywriter.delete(triples, true);
         // now they should still be there
-        results = sparqlService(queryService, ALL_TRIPLES).execConstruct();
+        results = sparqlService(queryService, ALL_TRIPLES()).execConstruct();
         assertTrue("Should not be able to delete with a read-only session!", results.containsAll(jenaStatements));
         // should really remove them
         writer.delete(triples, true);
         // now they should really be gone
-        results = sparqlService(queryService, ALL_TRIPLES).execConstruct();
+        results = sparqlService(queryService, ALL_TRIPLES()).execConstruct();
         assertTrue("Should be able to delete with an ordinary session!", results.isEmpty());
 
         sparqlConnector.close();
