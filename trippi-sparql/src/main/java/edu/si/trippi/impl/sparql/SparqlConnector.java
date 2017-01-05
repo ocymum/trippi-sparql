@@ -74,7 +74,7 @@ public class SparqlConnector extends TriplestoreConnector {
 
     public static String DEFAULT_URI_BASE = "info:edu.si.fedora";
 
-    public static String uriBase;
+    public static String rebaser;
 
     /**
      * In order to resolve relative URIs in a repeatable way, this method should always be used to provide a BASE_URI
@@ -84,7 +84,7 @@ public class SparqlConnector extends TriplestoreConnector {
      * @return the same test with a BASE_URI declaration prefixed and default prefix mappings provided
      */
     public static String rebase(final String text) {
-        return format("BASE <" + uriBase + ">\n" + DEFAULT_PREFIXES_DECLARATIONS + "%1$s", text);
+        return format(rebaser, text);
     }
 
     public static final String DEFAULT_BUFFER_FLUSH_BATCH_SIZE = "20000";
@@ -181,8 +181,9 @@ public class SparqlConnector extends TriplestoreConnector {
         log.info("Using construct endpoint {}", constructEndpoint);
         final Node graphName = createURI(config.getOrDefault("graphName", "#ri"));
         log.info("Using graph name {}", stringForNode(graphName));
-        uriBase = config.getOrDefault("uriBase", DEFAULT_URI_BASE);
+        final String uriBase = config.getOrDefault("uriBase", DEFAULT_URI_BASE);
         log.info("Using URI base {}", uriBase);
+        rebaser = "BASE <" + uriBase + ">\n" + DEFAULT_PREFIXES_DECLARATIONS + "%1$s";
 
         if (factory != null) {
             factory.close();
