@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>edu.si.trippi</groupId>
 		<artifactId>trippi</artifactId>
-		<version>1.0</version>
+		<version>1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>trippi-sparql-fcrepo-webapp</artifactId>
 
