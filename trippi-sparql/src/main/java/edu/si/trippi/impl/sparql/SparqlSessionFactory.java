@@ -28,10 +28,23 @@
 
 package edu.si.trippi.impl.sparql;
 
+import static org.apache.jena.query.Query.QueryTypeAsk;
+import static org.apache.jena.query.Query.QueryTypeConstruct;
+import static org.apache.jena.query.Query.QueryTypeDescribe;
+import static org.apache.jena.query.Query.QueryTypeSelect;
 import static org.apache.jena.query.QueryExecutionFactory.sparqlService;
 import static org.apache.jena.update.UpdateExecutionFactory.createRemote;
+
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 import edu.si.trippi.impl.sparql.SparqlSession.ReadOnlySparqlSession;
 import org.apache.jena.graph.Node;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.update.UpdateRequest;
 import org.trippi.impl.base.TriplestoreSessionFactory;
 
 /**
@@ -41,13 +54,21 @@ import org.trippi.impl.base.TriplestoreSessionFactory;
  */
 public class SparqlSessionFactory implements TriplestoreSessionFactory {
 
-    static final String[] LANGUAGES = new String[] {"SPARQL"};
+    private static final IllegalArgumentException BAD_QUERY = new IllegalArgumentException(
+                    "Query executor called with query other than SELECT or ASK!");
 
-    private final String updateEndpoint, queryEndpoint, constructEndpoint;
+    private static final IllegalArgumentException BAD_CONSTRUCT = new IllegalArgumentException(
+                    "Construct executor called with query other than CONSTRUCT or DESCRIBE!");
+
+    static final String[] LANGUAGES = new String[] { "SPARQL" };
 
     private Node graphName;
 
     private boolean readOnly;
+
+    private final Function<Query, ResultSet> queryExecutor;
+    private final Function<Query, Model> constructExecutor;
+    private final Consumer<UpdateRequest> updateExecutor;
 
     /**
      * Full constructor.
@@ -57,23 +78,48 @@ public class SparqlSessionFactory implements TriplestoreSessionFactory {
      * @param constructEndpoint the SPARQL Query endpoint against which to act for CONSTRUCT queries
      * @param readOnly whether this factory creates read-only sessions
      */
-    public SparqlSessionFactory(final String updateEndpoint, final String queryEndpoint,
-            final String constructEndpoint, final Node gN, final boolean readOnly) {
-        this.updateEndpoint = updateEndpoint;
-        this.queryEndpoint = queryEndpoint;
-        this.constructEndpoint = constructEndpoint;
+    public SparqlSessionFactory(final String updateEndpoint, final String queryEndpoint, final String constructEndpoint,
+                    final Node gN, final boolean readOnly) {
+        this.updateExecutor = u -> createRemote(u, updateEndpoint).execute();
+        this.queryExecutor = queryExecutor(queryEndpoint);
+        this.constructExecutor = constructExecutor(constructEndpoint);
+
         this.graphName = gN;
         this.readOnly = readOnly;
     }
 
+    private static Function<Query, Model> constructExecutor(String constructEndpoint) {
+        return q -> {
+            final QueryExecution qe = sparqlService(constructEndpoint, q);
+            switch (q.getQueryType()) {
+            case QueryTypeConstruct:
+                return qe.execConstruct();
+            case QueryTypeDescribe:
+                return qe.execDescribe();
+            default:
+                throw BAD_CONSTRUCT;
+            }
+        };
+    }
+
+    private static Function<Query, ResultSet> queryExecutor(String queryEndpoint) {
+        return q -> {
+            final QueryExecution qe = sparqlService(queryEndpoint, q);
+            switch (q.getQueryType()) {
+            case QueryTypeSelect:
+                return qe.execSelect();
+            case QueryTypeAsk:
+                return new AskResultSet(qe.execAsk());
+            default:
+                throw BAD_QUERY;
+            }
+        };
+    }
+
     @Override
     public SparqlSession newSession() {
-        return readOnly ? new ReadOnlySparqlSession(u -> createRemote(u, updateEndpoint).execute(),
-                        q -> sparqlService(queryEndpoint, q).execSelect(),
-                        c -> sparqlService(constructEndpoint, c).execConstruct(), graphName)
-                        : new SparqlSession(u -> createRemote(u, updateEndpoint).execute(),
-                        q -> sparqlService(queryEndpoint, q).execSelect(),
-                        c -> sparqlService(constructEndpoint, c).execConstruct(), graphName);
+        return readOnly ? new ReadOnlySparqlSession(updateExecutor, queryExecutor, constructExecutor, graphName)
+                        : new SparqlSession(updateExecutor, queryExecutor, constructExecutor, graphName);
     }
 
     @Override
@@ -90,5 +136,4 @@ public class SparqlSessionFactory implements TriplestoreSessionFactory {
     public void close() {
         // NO OP
     }
-
 }

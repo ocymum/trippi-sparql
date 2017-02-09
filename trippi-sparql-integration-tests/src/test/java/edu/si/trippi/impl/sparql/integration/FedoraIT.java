@@ -102,6 +102,14 @@ public class FedoraIT extends IT {
         // this test implicitly tests for fedora-model: default prefix mapping
         final Property ownerId = triples.createProperty("fedora-model:ownerId");
         triples.listObjectsOfProperty(testObjectName, ownerId).forEachRemaining(o -> assertEquals(admin, o));
+        
+        // test an ASK query
+        testQuery = "ASK FROM " + graphName + "{ <info:fedora/test:1> dc:identifier \"test:1\" }";
+        escapedTestQuery = new PercentEscaper("", false).escape(testQuery);
+        String result  = HttpOp.execHttpGetString(FEDORA_URI + "/risearch?type=tuples&lang=sparql&format=Sparql&query=" + escapedTestQuery);
+        // TODO stronger assertion that respects SPARQL Result format
+        assertTrue(result.contains("<k0 datatype=\"http://www.w3.org/2001/XMLSchema#boolean\">true</k0>"));
+
         // delete the test object
         execHttpDelete(FEDORA_URI + "/objects/test:1");
         triples = triplesForObjectName(testObjectName);
