@@ -4,16 +4,35 @@ To build (requires Java 8):
 
     cd trippi-sparql ; mvn clean install
 
-This will result in a large `trippi-sparql-*.jar` JAR in the `trippi-sparql/trippi-sparql/target/` directory which contains the connector and its dependencies, and a `trippi-sparql-fcrepo-webapp-*.war` WAR in `trippi-sparql/trippi-sparql-fcrepo-webapp/target` . To use this connector with Fedora 3, this large JAR can be dropped into the `WEB-INF/lib/` directory of a Fedora 3 web-application, or the WAR file can be used (it is simply the ordinary Fedora 3 web-application with the JAR pre-installed). Then, a `<datastore/>` element must be configured in `fedora.fcfg`. An example is shown below featuring the various parameters available. For each parameter except `connectorClassName` and `updateEndpoint`, a default will be used if no `<param/>` element for that parameter is supplied. The default will be the value shown in the example below, except that the default for the SPARQL CONSTRUCT Query endpoint is just the ordinary SPARQL Query endpoint, and the default for the ordinary SPARQL Query endpoint is the SPARQL Update endpoint. 
+This will result in a large `trippi-sparql-*.jar` JAR in the `trippi-sparql/trippi-sparql/target/` directory which contains the connector and its dependencies, and a `trippi-sparql-fcrepo-webapp-*.war` WAR in `trippi-sparql/trippi-sparql-fcrepo-webapp/target` . To use this connector with Fedora 3, this large JAR can be dropped into the `WEB-INF/lib/` directory of a Fedora 3 web-application, or the WAR file can be used (it is simply the ordinary Fedora 3 web-application with the JAR pre-installed). Then, a `<datastore/>` element must be configured in `fedora.fcfg`. An example is shown below featuring the various parameters available. For each parameter except `connectorClassName` and `updateEndpoint`, a default will be used if no `<param/>` element for that parameter is supplied. The default value for each parameter will be the value shown in the example below, except that the default for the SPARQL CONSTRUCT Query endpoint is just the ordinary SPARQL Query endpoint, and the default for the ordinary SPARQL Query endpoint is the SPARQL Update endpoint.
+The default for `graphName` is as shown, but users should be aware that any relative URI used there (the default `#ri` is as used by Fedora 3's Mulgara configuration) will be resolved against a base URI configured in the parameter `uriBase` with default as shown below. Queries transmitted through Fedora's Resource Index API will be automatically  equipped with an appropriate BASE declaration, but otherwise, clients that use the SPARQL endpoints directly are responsible for ensuring that the base URI is used correctly. A convenience method `SparqlConnector::rebase` is available for the purpose.
 
 
     <datastore id="sparqlTriplestore">
         <comment>Triplestore addressed by SPARQL-over-HTTP used by the Resource Index</comment>
-        <param name="connectorClassName" value="com.asoroka.trippi.impl.sparql.SparqlConnector">
+        <param name="connectorClassName" value="edu.si.trippi.impl.sparql.SparqlConnector">
             <comment>The name of the Trippi Connector class used to communicate with the triplestore.</comment>
+        </param>
+        <param name="readOnly" value="false">
+            <comment>Whether this connector is going to be read-only in operation.</comment>
+        </param>
+        <param name="graphName" value="#ri">
+            <comment>The URI of the named graph in which triples will be managed.</comment>
+        </param>
+        <param name="uriBase" value="info:edu.si.fedora">
+            <comment>The base that will be used to resolve a graph name that is a relative URI.</comment>
         </param>
         <param name="maxHttpConnections" value="10">
             <comment>The maximum number of clients in the HTTP client pool used for SPARQL Update requests.</comment>
+        </param>
+        <param name="initialTripleStorePoolSize" value="3">
+            <comment>The initial number of sessions in the triplestore pool.</comment>
+        </param>
+        <param name="maxTripleStorePoolGrowth" value="-1">
+            <comment>The maximum number of additional sessions to add to the triplestore pool. If specified as -1, no limit will be placed on pool growth.</comment>
+        </param>
+        <param name="spareTripleStorePool" value="1">
+            <comment>The number of spare sessions to maintain in the triplestore pool.</comment>
         </param>
         <param name="updateEndpoint" value="http://localhost:3030/fuseki/update">
             <comment>The URL of a SPARQL Update endpoint for the triplestore to be used with this connector.</comment>
