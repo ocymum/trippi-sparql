@@ -74,8 +74,8 @@ public class SparqlSessionFactory implements TriplestoreSessionFactory {
      * Full constructor.
      *
      * @param updateEndpoint the SPARQL Update endpoint against which to act
-     * @param queryEndpoint the SPARQL Query endpoint against which to act for non-CONSTRUCT queries
-     * @param constructEndpoint the SPARQL Query endpoint against which to act for CONSTRUCT queries
+     * @param queryEndpoint the SPARQL Query endpoint against which to act for SELECT/ASK queries
+     * @param constructEndpoint the SPARQL Query endpoint against which to act for CONSTRUCT/DESCRIBE queries
      * @param readOnly whether this factory creates read-only sessions
      */
     public SparqlSessionFactory(final String updateEndpoint, final String queryEndpoint, final String constructEndpoint,
