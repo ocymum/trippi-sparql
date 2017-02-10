@@ -96,7 +96,7 @@ public class FedoraIT extends IT {
         String escapedTestQuery = new PercentEscaper("", false).escape(testQuery);
         String dcIdentifierResult = HttpOp.execHttpGetString(
                         FEDORA_URI + "/risearch?type=tuples&lang=sparql&format=Sparql&query=" + escapedTestQuery);
-        // TODO stronger assertion that respects SPARQL Result format
+        // TODO stronger assertion, but blocked by Fedora's obsolete results formatting
         assertTrue("Wrong dc:identifier for test object!", dcIdentifierResult.contains("<label>test:1</label>"));
 
         // this test implicitly tests for fedora-model: default prefix mapping
@@ -106,8 +106,8 @@ public class FedoraIT extends IT {
         // test an ASK query
         testQuery = "ASK FROM " + graphName + "{ <info:fedora/test:1> dc:identifier \"test:1\" }";
         escapedTestQuery = new PercentEscaper("", false).escape(testQuery);
-        String result  = HttpOp.execHttpGetString(FEDORA_URI + "/risearch?type=tuples&lang=sparql&format=Sparql&query=" + escapedTestQuery);
-        // TODO stronger assertion that respects SPARQL Result format
+        String result  = HttpOp.execHttpGetString(FEDORA_URI + "/risearch?type=tuples&lang=TSV&format=Sparql&query=" + escapedTestQuery);
+        // TODO stronger assertion, but blocked by Fedora's obsolete results formatting
         assertTrue(result.contains("<k0 datatype=\"http://www.w3.org/2001/XMLSchema#boolean\">true</k0>"));
 
         // delete the test object
@@ -119,8 +119,7 @@ public class FedoraIT extends IT {
 
     private static Model triplesForObjectName(final Resource r) {
         try {
-            final String queryString = "CONSTRUCT { " + r + " ?p ?o } WHERE { GRAPH " + graphName + " { " + r
-                            + " ?p ?o } . }";
+            final String queryString = "DESCRIBE " + r + " FROM " + graphName;
             final String query = encode(queryString, "UTF8");
             final String queryUri = RI_URI + "?type=triples&lang=sparql&format=N-Triples&query=" + query;
             return loadModel(queryUri, NTRIPLES);

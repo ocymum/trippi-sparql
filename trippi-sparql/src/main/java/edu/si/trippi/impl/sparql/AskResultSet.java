@@ -44,7 +44,8 @@ import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.engine.ResultSetStream;
 
 /**
- * A simple {@link org.apache.jena.query.ResultSet} which presents a single boolean value.
+ * A simple {@link org.apache.jena.query.ResultSet} which presents a single boolean value, for use in returning the
+ * results of ASK queries.
  * 
  * @author ajs6f
  *
