@@ -106,7 +106,7 @@ public class FedoraIT extends IT {
         // test an ASK query
         testQuery = "ASK FROM " + graphName + "{ <info:fedora/test:1> dc:identifier \"test:1\" }";
         escapedTestQuery = new PercentEscaper("", false).escape(testQuery);
-        String result  = HttpOp.execHttpGetString(FEDORA_URI + "/risearch?type=tuples&lang=TSV&format=Sparql&query=" + escapedTestQuery);
+        String result  = HttpOp.execHttpGetString(FEDORA_URI + "/risearch?type=tuples&lang=sparql&format=Sparql&query=" + escapedTestQuery);
         // TODO stronger assertion, but blocked by Fedora's obsolete results formatting
         assertTrue(result.contains("<k0 datatype=\"http://www.w3.org/2001/XMLSchema#boolean\">true</k0>"));
 
