@@ -72,9 +72,9 @@ public class SparqlConnector extends TriplestoreConnector {
                     + "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n"
                     + "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n";
 
-    public static String DEFAULT_URI_BASE = "info:edu.si.fedora";
+    public static final String DEFAULT_URI_BASE = "info:edu.si.fedora";
 
-    public static String rebaser;
+    static String rebaser;
 
     /**
      * In order to resolve relative URIs in a repeatable way, this method should always be used to provide a BASE_URI
@@ -126,9 +126,7 @@ public class SparqlConnector extends TriplestoreConnector {
 
     @Override
     public void setTripleIteratorFactory(final TripleIteratorFactory factory) {
-        if (tripleIteratorFactory != null) {
-            tripleIteratorFactory.shutdown();
-        }
+        if (tripleIteratorFactory != null) tripleIteratorFactory.shutdown();
         tripleIteratorFactory = factory;
         try {
             open();
@@ -160,9 +158,8 @@ public class SparqlConnector extends TriplestoreConnector {
 
     @Override
     public void open() throws TrippiException {
-        if (writer != null) {
-            writer.close();
-        }
+        if (writer != null) writer.close();
+        
         final int bufferFlushBatchSize = parseInt(
                         config.getOrDefault("bufferFlushBatchSize", DEFAULT_BUFFER_FLUSH_BATCH_SIZE));
         final int bufferSafeCapacity = parseInt(
@@ -185,9 +182,7 @@ public class SparqlConnector extends TriplestoreConnector {
         log.info("Using URI base {}", uriBase);
         rebaser = "BASE <" + uriBase + ">\n" + DEFAULT_PREFIXES_DECLARATIONS + "%1$s";
 
-        if (factory != null) {
-            factory.close();
-        }
+        if (factory != null) factory.close();
         factory = new SparqlSessionFactory(updateEndpoint, queryEndpoint, constructEndpoint, graphName, readOnly);
 
         final PoolingClientConnectionManager connectionManager = new PoolingClientConnectionManager();
@@ -196,9 +191,7 @@ public class SparqlConnector extends TriplestoreConnector {
         connectionManager.setDefaultMaxPerRoute(maxConnections);
         setDefaultHttpClient(new DefaultHttpClient(connectionManager));
 
-        if (tripleIteratorFactory == null) {
-            tripleIteratorFactory = new TripleIteratorFactory();
-        }
+        if (tripleIteratorFactory == null) tripleIteratorFactory = new TripleIteratorFactory();
 
         final int initialSize = parseInt(config.getOrDefault("initialTripleStorePoolSize", DEFAULT_INITIAL_SIZE));
         log.info("Using Trippi connection pool with initial size of {}", initialSize);

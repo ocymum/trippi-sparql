@@ -84,7 +84,7 @@ public class ObjectConverterTest {
             return ObjectConverter.objectConverter;
         }
 
-        final String simple = "Simple literal.";
+        private final String simple = "Simple literal.";
 
         @Override
         protected ObjectNode from() throws GraphElementFactoryException {
