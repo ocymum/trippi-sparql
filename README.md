@@ -1,7 +1,7 @@
 [Trippi](http://trippi.sourceforge.net) RDF SPI implementation using SPARQL Update over HTTP.
 
 
-+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/edu.si.trippi/trippi-sparql/badge.svg)](https://maven-badges.herokuapp.com/maven-central/edu.si.trippi/trippi-sparql/)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/edu.si.trippi/trippi-sparql/badge.svg)](https://maven-badges.herokuapp.com/maven-central/edu.si.trippi/trippi-sparql/)
 
 To build (requires Java 8):
 
