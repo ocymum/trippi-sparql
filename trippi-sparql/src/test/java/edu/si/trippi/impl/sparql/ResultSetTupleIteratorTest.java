@@ -35,13 +35,17 @@ import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.sparql.engine.QueryExecutionBase;
 import org.apache.jena.sparql.engine.binding.Binding;
 import org.jrdf.graph.Node;
 import org.junit.Assert;
@@ -69,27 +73,62 @@ public class ResultSetTupleIteratorTest extends Assert {
         final ResultSet testResultSet = new ResultSet() {
 
             @Override
-            public boolean hasNext() { return i.hasNext(); }
+            public boolean hasNext() {
+                return i.hasNext();
+            }
 
             @Override
-            public QuerySolution next() { return i.next(); }
+            public QuerySolution next() {
+                return i.next();
+            }
 
             @Override
-            public QuerySolution nextSolution() { return next(); }
+            public QuerySolution nextSolution() {
+                return next();
+            }
 
             @Override
-            public Binding nextBinding() { throw new UnsupportedOperationException(); }
+            public Binding nextBinding() {
+                throw new UnsupportedOperationException();
+            }
 
             @Override
-            public int getRowNumber() { throw new UnsupportedOperationException(); }
+            public int getRowNumber() {
+                throw new UnsupportedOperationException();
+            }
 
             @Override
-            public List<String> getResultVars() { return asList("name", "rank", "serialNumber"); }
+            public List<String> getResultVars() {
+                return asList("name", "rank", "serialNumber");
+            }
 
             @Override
-            public Model getResourceModel() { throw new UnsupportedOperationException(); }
+            public Model getResourceModel() {
+                throw new UnsupportedOperationException();
+            }
         };
-        final ResultSetTupleIterator results = new ResultSetTupleIterator(testResultSet);
+
+        final Query query = new Query();
+        query.setQuerySelectType();
+
+        AtomicBoolean queryIsClosed = new AtomicBoolean();
+
+        final QueryExecution testQueryExec = new QueryExecutionBase(null, null, null, null) {
+
+            public ResultSet execSelect() {
+                return testResultSet;
+            }
+
+            public Query getQuery() {
+                return query;
+            }
+
+            public void close() {
+                queryIsClosed.set(true);
+            }
+        };
+
+        final ResultSetTupleIterator results = new ResultSetTupleIterator(testQueryExec);
         assertEquals(3, results.names().length);
         final Map<String, Node> solution = results.next();
         assertTrue(solution.containsKey("name"));
@@ -100,5 +139,7 @@ public class ResultSetTupleIteratorTest extends Assert {
         assertEquals(solutionNode3.getId().getLabelString(), solution.get("serialNumber").stringValue());
 
         assertEquals(3, results.count());
+        results.close();
+        assertTrue(queryIsClosed.get());
     }
 }
