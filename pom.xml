@@ -42,7 +42,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <fedora.version>3.8.1</fedora.version>
-        <fuseki.version>2.3.1</fuseki.version>
+        <fuseki.version>2.6.0</fuseki.version>
         <jena.version>3.1.0</jena.version>
     </properties>
 
@@ -147,7 +147,7 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.2.1</version>
+			<version>1.2.3</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
