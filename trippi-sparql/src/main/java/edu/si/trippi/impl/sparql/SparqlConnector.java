@@ -74,7 +74,7 @@ public class SparqlConnector extends TriplestoreConnector {
 
     public static final String DEFAULT_URI_BASE = "info:edu.si.fedora";
 
-    static String rebaser;
+    static String rebaser = DEFAULT_PREFIXES_DECLARATIONS + "%1$s";
 
     /**
      * In order to resolve relative URIs in a repeatable way, this method should always be used to provide a BASE_URI

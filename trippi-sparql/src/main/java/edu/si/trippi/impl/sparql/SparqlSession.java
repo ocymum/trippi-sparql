@@ -36,28 +36,25 @@ import static edu.si.trippi.impl.sparql.converters.PredicateConverter.predicateC
 import static edu.si.trippi.impl.sparql.converters.SubjectConverter.subjectConverter;
 import static edu.si.trippi.impl.sparql.converters.TripleConverter.tripleConverter;
 import static java.lang.String.format;
-import static org.apache.jena.ext.com.google.common.collect.FluentIterable.from;
+import static java.util.stream.Collectors.joining;
+import static org.apache.commons.lang3.ArrayUtils.contains;
 import static org.apache.jena.query.Query.QueryTypeConstruct;
 import static org.apache.jena.query.Query.QueryTypeDescribe;
-import static org.apache.jena.riot.writer.NTriplesWriter.write;
 import static org.apache.jena.sparql.util.FmtUtils.stringForNode;
 import static org.apache.jena.update.UpdateFactory.create;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Node_Variable;
-import org.apache.jena.graph.Triple;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.sparql.util.FmtUtils;
 import org.apache.jena.update.UpdateRequest;
 import org.jrdf.graph.ObjectNode;
 import org.jrdf.graph.PredicateNode;
@@ -104,11 +101,11 @@ public class SparqlSession implements TriplestoreSession {
      * @param constructExecutor the service against which to execute SPARQL Query CONSTRUCT requests
      */
     public SparqlSession(final Consumer<UpdateRequest> updateExecutor, final Function<Query, QueryExecution> queryExecutor,
-                    final Function<Query, QueryExecution> constructExecutor, final Node gN) {
+                    final Function<Query, QueryExecution> constructExecutor, final Node graphName) {
         this.updateExecutor = updateExecutor;
         this.queryExecutor = queryExecutor;
         this.constructExecutor = constructExecutor;
-        this.graphName = stringForNode(gN);
+        this.graphName = stringForNode(graphName);
     }
 
     @Override
@@ -129,35 +126,19 @@ public class SparqlSession implements TriplestoreSession {
      */
     protected void mutate(final Set<org.jrdf.graph.Triple> triples, final Operation operation) {
         log.debug(operation + " for triples: {}", triples);
-        final Iterable<Triple> trips = from(triples).transform(tripleConverter::convert);
-        final String datablock = datablock(trips);
-        final String payload = rebase(format("%1$s DATA { GRAPH %2$s { %3$s } . }", operation, graphName, datablock));
+        final String block = triples.stream()
+                        .map(tripleConverter::convert)
+                        .map(FmtUtils::stringForTriple)
+                        .collect(joining(" .\n"));
+        final String payload = rebase(format("%1$s DATA { GRAPH %2$s { \n%3$s \n } }", operation, graphName, block));
         log.debug("Sending SPARQL Update operation:\n{}", payload);
-        final UpdateRequest request = create(payload);
-        updateExecutor.accept(request);
+        updateExecutor.accept(create(payload));
     }
 
     /**
      * The various operations that can be performed against a triplestore via SPARQL Update.
      */
-    public static enum Operation {
-        INSERT, DELETE
-    }
-
-    /**
-     * Creates serialized RDF appropriate for use in a SPARQL Update request.
-     *
-     * @param triples the RDF to serialize
-     * @return a block of serialized RDF
-     */
-    private static String datablock(final Iterable<Triple> triples) {
-        try (final StringWriter w = new StringWriter()) {
-            write(w, triples.iterator());
-            return w.toString();
-        } catch (final IOException e) {
-            throw new AssertionError(e);
-        }
-    }
+    public static enum Operation { INSERT, DELETE }
 
     @Override
     public String[] listTupleLanguages() {
@@ -193,22 +174,21 @@ public class SparqlSession implements TriplestoreSession {
     }
 
     /**
-     * This connector uses only SPARQL.
+     * This connector supports only SPARQL.
      *
      * @param lang the language of a query
      * @throws TrippiException
      */
     private static void checkLang(final String lang) throws TrippiException {
-        if (!lang.toLowerCase().contains("sparql"))
-            throw new UnsupportedLanguageException("This Trippi connector uses only SPARQL!");
+        if (!contains(SparqlSessionFactory.LANGUAGES, lang.toUpperCase())) throw new UnsupportedLanguageException();
     }
 
     public static class UnsupportedLanguageException extends TrippiException {
 
         private static final long serialVersionUID = 1L;
 
-        public UnsupportedLanguageException(final String message) {
-            super(message);
+        public UnsupportedLanguageException() {
+            super("This Trippi connector supports only SPARQL!");
         }
     }
 
@@ -223,9 +203,6 @@ public class SparqlSession implements TriplestoreSession {
         return findTriples("sparql", queryText);
     }
 
-    private static final IllegalArgumentException BAD_CONSTRUCT = new IllegalArgumentException(
-                    "Construct executor called with query other than CONSTRUCT or DESCRIBE!");
-    
     protected static final Function<QueryExecution, Model> modelRetriever = q -> {
         switch (q.getQuery().getQueryType()) {
         case QueryTypeConstruct:
@@ -233,7 +210,7 @@ public class SparqlSession implements TriplestoreSession {
         case QueryTypeDescribe:
             return q.execDescribe();
         default:
-            throw BAD_CONSTRUCT;
+            throw new IllegalArgumentException("Triple service called with query type other than CONSTRUCT or DESCRIBE!");
         }
     };
 
