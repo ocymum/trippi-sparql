@@ -51,7 +51,9 @@
             <id>ajs6f</id>
             <name>A. Soroka</name>
             <timezone>America/Kentucky/Louisville</timezone>
-            <url>http://www.asoroka.com</url>
+            <email>sorokaa at si dot edu</email>
+            <organization>Smithsonian Institution</organization>
+            <organizationUrl>http://si.edu</organizationUrl>
             <roles>
                 <role>Originator</role>
             </roles>
@@ -76,20 +78,6 @@
         <url>scm:git:git://github.com/Smithsonian/trippi-sparql.git</url>
       <tag>HEAD</tag>
     </scm>
-    
-    <repositories>
-      <repository>
-        <id>Duraspace</id>
-        <name>Duraspace-maintained cache of Central</name>
-        <url>https://m2.duraspace.org/content/repositories/central</url>
-        <releases>
-          <enabled>true</enabled>
-        </releases>
-        <snapshots>
-          <enabled>false</enabled>
-        </snapshots>
-      </repository>
-    </repositories>
 
     <dependencyManagement>
         <dependencies>
