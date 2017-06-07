@@ -38,8 +38,6 @@ import static org.apache.jena.query.Query.QueryTypeSelect;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-
 import org.apache.jena.graph.Node_Blank;
 import org.apache.jena.graph.Node_Literal;
 import org.apache.jena.graph.Node_URI;
@@ -67,8 +65,19 @@ public class ResultSetTupleIterator extends TupleIterator {
      */
     public ResultSetTupleIterator(final QueryExecution q) {
         this.q = q;
-        this.results = queryRetriever.apply(q);
+        this.results = retrieveResults(q);
     }
+
+    protected static final ResultSet retrieveResults(QueryExecution q) {
+        switch (q.getQuery().getQueryType()) {
+        case QueryTypeSelect:
+            return q.execSelect();
+        case QueryTypeAsk:
+            return new AskResultSet(q.execAsk());
+        default:
+            throw new IllegalArgumentException("Tuple service called with query type other than SELECT or ASK!");
+        }
+    };
 
     @Override
     public boolean hasNext() {
@@ -95,18 +104,4 @@ public class ResultSetTupleIterator extends TupleIterator {
 
     @Override
     public void close() { q.close(); }
-
-    private static final IllegalArgumentException BAD_QUERY = new IllegalArgumentException(
-                    "Query executor called with query other than SELECT or ASK!");
-
-    protected static final Function<QueryExecution, ResultSet> queryRetriever = q -> {
-        switch (q.getQuery().getQueryType()) {
-        case QueryTypeSelect:
-            return q.execSelect();
-        case QueryTypeAsk:
-            return new AskResultSet(q.execAsk());
-        default:
-            throw BAD_QUERY;
-        }
-    };
 }

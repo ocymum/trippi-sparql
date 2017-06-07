@@ -37,10 +37,8 @@ import static edu.si.trippi.impl.sparql.converters.SubjectConverter.subjectConve
 import static edu.si.trippi.impl.sparql.converters.TripleConverter.tripleConverter;
 import static java.lang.String.format;
 import static org.apache.jena.ext.com.google.common.collect.FluentIterable.from;
-import static org.apache.jena.query.Query.QueryTypeAsk;
 import static org.apache.jena.query.Query.QueryTypeConstruct;
 import static org.apache.jena.query.Query.QueryTypeDescribe;
-import static org.apache.jena.query.Query.QueryTypeSelect;
 import static org.apache.jena.riot.writer.NTriplesWriter.write;
 import static org.apache.jena.sparql.util.FmtUtils.stringForNode;
 import static org.apache.jena.update.UpdateFactory.create;
@@ -58,7 +56,6 @@ import org.apache.jena.graph.Triple;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryFactory;
-import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.update.UpdateRequest;
@@ -188,7 +185,7 @@ public class SparqlSession implements TriplestoreSession {
     public TripleIterator findTriples(final String lang, final String queryText) throws TrippiException {
         checkLang(lang);
         final Query query = QueryFactory.create(rebase(queryText));
-        final Model answer = constructExecutor.andThen(constructRetriever).apply(query);
+        final Model answer = constructExecutor.andThen(modelRetriever).apply(query);
         final Set<org.jrdf.graph.Triple> triples = answer.listStatements().mapWith(Statement::asTriple).mapWith(
                         tripleConverter.reverse()::convert).toSet();
         final DefaultAliasManager aliases = new DefaultAliasManager(answer.getNsPrefixMap());
@@ -229,7 +226,7 @@ public class SparqlSession implements TriplestoreSession {
     private static final IllegalArgumentException BAD_CONSTRUCT = new IllegalArgumentException(
                     "Construct executor called with query other than CONSTRUCT or DESCRIBE!");
     
-    protected static final Function<QueryExecution, Model> constructRetriever = q -> {
+    protected static final Function<QueryExecution, Model> modelRetriever = q -> {
         switch (q.getQuery().getQueryType()) {
         case QueryTypeConstruct:
             return q.execConstruct();

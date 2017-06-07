@@ -51,9 +51,9 @@ public class SparqlSessionFactory implements TriplestoreSessionFactory {
 
     static final String[] LANGUAGES = new String[] { "SPARQL" };
 
-    private Node graphName;
+    private final Node graphName;
 
-    private boolean readOnly;
+    private final boolean readOnly;
 
     private final Function<Query, QueryExecution> queryExecutor;
     private final Function<Query, QueryExecution> constructExecutor;
@@ -65,20 +65,17 @@ public class SparqlSessionFactory implements TriplestoreSessionFactory {
      * @param updateEndpoint the SPARQL Update endpoint against which to act
      * @param queryEndpoint the SPARQL Query endpoint against which to act for SELECT/ASK queries
      * @param constructEndpoint the SPARQL Query endpoint against which to act for CONSTRUCT/DESCRIBE queries
+     * @param graphName the graphname to use when adding or deleting triples
      * @param readOnly whether this factory creates read-only sessions
      */
     public SparqlSessionFactory(final String updateEndpoint, final String queryEndpoint, final String constructEndpoint,
-                    final Node gN, final boolean readOnly) {
+                    final Node graphName, final boolean readOnly) {
         this.updateExecutor = u -> createRemote(u, updateEndpoint).execute();
-        this.queryExecutor = executor(queryEndpoint);
-        this.constructExecutor = executor(constructEndpoint);
+        this.queryExecutor = q -> sparqlService(queryEndpoint, q);
+        this.constructExecutor = q -> sparqlService(constructEndpoint, q);
 
-        this.graphName = gN;
+        this.graphName = graphName;
         this.readOnly = readOnly;
-    }
-    
-    private static final Function<Query, QueryExecution> executor(String endpoint) {
-        return q -> sparqlService(endpoint, q);
     }
 
     @Override

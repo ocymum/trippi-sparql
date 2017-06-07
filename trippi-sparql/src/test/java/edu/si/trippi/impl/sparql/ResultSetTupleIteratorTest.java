@@ -31,28 +31,35 @@ package edu.si.trippi.impl.sparql;
 import static java.util.Arrays.asList;
 import static org.apache.jena.rdf.model.ResourceFactory.createPlainLiteral;
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.sparql.engine.QueryExecutionBase;
-import org.apache.jena.sparql.engine.binding.Binding;
 import org.jrdf.graph.Node;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.trippi.TrippiException;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ResultSetTupleIteratorTest extends Assert {
+    
+    @Mock
+    private ResultSet mockResultSet;
+    
+    @Mock
+    private QueryExecution mockQueryExec;
 
     @Test
     public void test() throws TrippiException {
@@ -70,65 +77,18 @@ public class ResultSetTupleIteratorTest extends Assert {
         final QuerySolution q4 = new QuerySolutionMap();
         final Iterator<QuerySolution> i = asList(q1, q2, q3, q4).iterator();
 
-        final ResultSet testResultSet = new ResultSet() {
-
-            @Override
-            public boolean hasNext() {
-                return i.hasNext();
-            }
-
-            @Override
-            public QuerySolution next() {
-                return i.next();
-            }
-
-            @Override
-            public QuerySolution nextSolution() {
-                return next();
-            }
-
-            @Override
-            public Binding nextBinding() {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public int getRowNumber() {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public List<String> getResultVars() {
-                return asList("name", "rank", "serialNumber");
-            }
-
-            @Override
-            public Model getResourceModel() {
-                throw new UnsupportedOperationException();
-            }
-        };
+        when(mockResultSet.hasNext()).thenAnswer(inv -> i.hasNext());
+        when(mockResultSet.next()).thenAnswer(inv -> i.next());
+        when(mockResultSet.getResultVars()).thenReturn(asList("name", "rank", "serialNumber"));
 
         final Query query = new Query();
         query.setQuerySelectType();
 
-        AtomicBoolean queryIsClosed = new AtomicBoolean();
+        when(mockQueryExec.execSelect()).thenReturn(mockResultSet);
+        when(mockQueryExec.getQuery()).thenReturn(query);
 
-        final QueryExecution testQueryExec = new QueryExecutionBase(null, null, null, null) {
 
-            public ResultSet execSelect() {
-                return testResultSet;
-            }
-
-            public Query getQuery() {
-                return query;
-            }
-
-            public void close() {
-                queryIsClosed.set(true);
-            }
-        };
-
-        final ResultSetTupleIterator results = new ResultSetTupleIterator(testQueryExec);
+        final ResultSetTupleIterator results = new ResultSetTupleIterator(mockQueryExec);
         assertEquals(3, results.names().length);
         final Map<String, Node> solution = results.next();
         assertTrue(solution.containsKey("name"));
@@ -139,7 +99,6 @@ public class ResultSetTupleIteratorTest extends Assert {
         assertEquals(solutionNode3.getId().getLabelString(), solution.get("serialNumber").stringValue());
 
         assertEquals(3, results.count());
-        results.close();
-        assertTrue(queryIsClosed.get());
+        verify(mockQueryExec).close();
     }
 }
