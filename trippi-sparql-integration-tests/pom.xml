@@ -49,6 +49,17 @@
       <artifactId>jcl-over-slf4j</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+  
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -92,7 +103,7 @@
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
           <parallel>methods</parallel>
-          <threadCount>4</threadCount>
+          <useUnlimitedThreads>true</useUnlimitedThreads>
           <systemPropertyVariables>
             <dynamic.test.port>${dynamic.test.port}</dynamic.test.port>
           </systemPropertyVariables>

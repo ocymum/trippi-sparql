@@ -96,12 +96,6 @@
             </dependency>
 
             <dependency>
-                <groupId>com.google.collections</groupId>
-                <artifactId>google-collections</artifactId>
-                <version>1.0</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.apache.jena</groupId>
                 <artifactId>jena-arq</artifactId>
                 <version>${jena.version}</version>
@@ -113,6 +107,7 @@
                 <version>1.7.23</version>
             </dependency>
 
+            <!-- test gear -->
             <dependency>
               <groupId>org.apache.jena</groupId>
               <artifactId>jena-fuseki-war</artifactId>
@@ -120,31 +115,29 @@
               <type>war</type>
               <scope>test</scope>
             </dependency>
+
             <dependency>
               <groupId>org.mockito</groupId>
               <artifactId>mockito-core</artifactId>
               <version>2.7.12</version>
               <scope>test</scope>
             </dependency>
+            
+            <dependency>
+              <groupId>junit</groupId>
+              <artifactId>junit</artifactId>
+              <version>4.12</version>
+              <scope>test</scope>
+            </dependency>
+          
+            <dependency>
+              <groupId>ch.qos.logback</groupId>
+              <artifactId>logback-classic</artifactId>
+              <version>1.2.3</version>
+              <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <dependencies>
-		<!-- test -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.2.3</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
 
 	<build>
         <pluginManagement>
