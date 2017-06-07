@@ -35,6 +35,7 @@ import static edu.si.trippi.impl.sparql.converters.ObjectConverter.objectConvert
 import static edu.si.trippi.impl.sparql.converters.PredicateConverter.predicateConverter;
 import static edu.si.trippi.impl.sparql.converters.SubjectConverter.subjectConverter;
 import static edu.si.trippi.impl.sparql.converters.TripleConverter.tripleConverter;
+import static edu.si.trippi.impl.sparql.converters.TripleConverter.tripleUnconverter;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.ArrayUtils.contains;
@@ -66,6 +67,8 @@ import org.trippi.TupleIterator;
 import org.trippi.impl.base.DefaultAliasManager;
 import org.trippi.impl.base.TriplestoreSession;
 import org.trippi.io.SimpleTripleIterator;
+
+import edu.si.trippi.impl.sparql.converters.TripleConverter;
 
 /**
  * A {@link TriplestoreSession} implementation using SPARQL Query and Update for all operations.
@@ -168,7 +171,7 @@ public class SparqlSession implements TriplestoreSession {
         final Query query = QueryFactory.create(rebase(queryText));
         final Model answer = constructExecutor.andThen(modelRetriever).apply(query);
         final Set<org.jrdf.graph.Triple> triples = answer.listStatements().mapWith(Statement::asTriple).mapWith(
-                        tripleConverter.reverse()::convert).toSet();
+                        tripleUnconverter::convert).toSet();
         final DefaultAliasManager aliases = new DefaultAliasManager(answer.getNsPrefixMap());
         return new SimpleTripleIterator(triples, aliases);
     }

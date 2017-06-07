@@ -48,6 +48,7 @@ import org.trippi.impl.FreeTriple;
 public class TripleConverter extends Converter<Triple, org.apache.jena.graph.Triple> {
 
     public static final TripleConverter tripleConverter = new TripleConverter();
+    public static final Converter<org.apache.jena.graph.Triple, Triple> tripleUnconverter = tripleConverter.reverse();
 
     @Override
     protected org.apache.jena.graph.Triple doForward(final Triple t) {

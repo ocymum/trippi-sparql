@@ -1,6 +1,7 @@
 package edu.si.trippi.impl.sparql;
 
 import static edu.si.trippi.impl.sparql.converters.TripleConverter.tripleConverter;
+import static edu.si.trippi.impl.sparql.converters.TripleConverter.tripleUnconverter;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.jena.graph.NodeFactory.createURI;
@@ -22,6 +23,7 @@ import org.junit.Test;
 import org.trippi.TrippiException;
 
 import edu.si.trippi.impl.sparql.SparqlSession.UnsupportedLanguageException;
+import edu.si.trippi.impl.sparql.converters.TripleConverter;
 
 public class SparqlSessionTest extends Assert{
 
@@ -44,7 +46,7 @@ public class SparqlSessionTest extends Assert{
         
         Set<Triple> triples = asList(q1,q2,q3).stream()
                         .map(Quad::asTriple)
-                        .map(tripleConverter.reverse()::convert)
+                        .map(tripleUnconverter::convert)
                         .collect(toSet());
 
         Graph namedGraph = dataset.getGraph(graphName);

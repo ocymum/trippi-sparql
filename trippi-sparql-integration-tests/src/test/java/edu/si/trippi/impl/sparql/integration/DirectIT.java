@@ -29,19 +29,21 @@
 package edu.si.trippi.impl.sparql.integration;
 
 import static edu.si.trippi.impl.sparql.SparqlConnector.rebase;
-import static edu.si.trippi.impl.sparql.converters.TripleConverter.tripleConverter;
+import static edu.si.trippi.impl.sparql.converters.TripleConverter.tripleUnconverter;
 import static org.apache.jena.ext.com.google.common.collect.ImmutableMap.of;
 import static org.apache.jena.graph.NodeFactory.createURI;
+import static org.apache.jena.graph.Triple.ANY;
 import static org.apache.jena.query.QueryExecutionFactory.sparqlService;
-import static org.apache.jena.rdf.model.ModelFactory.createDefaultModel;
+import static org.apache.jena.rdf.model.ModelFactory.createModelForGraph;
+import static org.apache.jena.sparql.sse.SSE.parseGraph;
 import static org.apache.jena.sparql.util.FmtUtils.stringForNode;
 import static org.trippi.TripleMaker.createResource;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.jena.graph.Graph;
 import org.apache.jena.rdf.model.Model;
 import org.jrdf.graph.Node;
 import org.jrdf.graph.Triple;
@@ -110,7 +112,7 @@ public class DirectIT extends IT {
 
         // check that they were all added
         Model results = sparqlService(queryService, ALL_TRIPLES()).execConstruct();
-        assertTrue("Failed to discover the triples we stored!", results.containsAll(jenaStatements));
+        assertTrue("Failed to discover the triples we stored!", results.containsAll(jenaModel));
 
         // check that we can query them via our connector
         assertEquals(1, reader.countTriples(createResource("info:subject4"), null, null, 0));
@@ -131,7 +133,7 @@ public class DirectIT extends IT {
 
         // check that they were all removed
         results = sparqlService(queryService, ALL_TRIPLES()).execConstruct();
-        assertFalse(results.containsAny(jenaStatements));
+        assertFalse(results.containsAny(jenaModel));
 
         sparqlConnector.close();
     }
@@ -161,12 +163,12 @@ public class DirectIT extends IT {
         writer.add(triples, true);
         // now they really should have been added
         results = sparqlService(queryService, ALL_TRIPLES()).execConstruct();
-        assertTrue("Failed to discover the triples we stored!", results.containsAll(jenaStatements));
+        assertTrue("Failed to discover the triples we stored!", results.containsAll(jenaModel));
         // should not do anything
         readOnlywriter.delete(triples, true);
         // now they should still be there
         results = sparqlService(queryService, ALL_TRIPLES()).execConstruct();
-        assertTrue("Should not be able to delete with a read-only session!", results.containsAll(jenaStatements));
+        assertTrue("Should not be able to delete with a read-only session!", results.containsAll(jenaModel));
         // should really remove them
         writer.delete(triples, true);
         // now they should really be gone
@@ -181,23 +183,12 @@ public class DirectIT extends IT {
      * Note the absence of triples using blank nodes. Fedora does not create or manage such triples, so this is
      * reasonable test data.
      */
-    private static final String testData = "<info:subject1> <info:predicate1> <info:subject2> .\n" +
-                    "<info:subject2> <info:predicate2> \"1234\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n" +
-                    "<info:subject2> <info:predicate2> \"Chrysophylax\"^^<http://www.example.com/dives> .\n" +
-                    "<info:subject3>  <info:predicate3> \"Shalom!\"@he .\n" +
-                    "<info:subject4>  <info:predicate4> \"Oingoboingo\" .\n";
-
-    private static final Model jenaStatements = createDefaultModel();
-
-    private static final List<Triple> triples;
-
-    static {
-        try (final StringReader rdf = new StringReader(testData)) {
-            jenaStatements.read(rdf, null, "N-TRIPLE");
-        }
-        triples = jenaStatements.listStatements()
-                        .mapWith(org.apache.jena.rdf.model.Statement::asTriple)
-                        .mapWith(tripleConverter.reverse()::convert)
-                        .toList();
-    }
+    private static final Graph jenaGraph = parseGraph
+             ("(graph  (<info:subject4>  <info:predicate4> \"Oingoboingo\")"
+                    + "(<info:subject1> <info:predicate1> <info:subject2>)"
+                    + "(<info:subject2> <info:predicate2> \"1234\"^^<http://www.w3.org/2001/XMLSchema#integer>)"
+                    + "(<info:subject2> <info:predicate2> \"Chrysophylax\"^^<http://www.example.com/dives>)"
+                    + "(<info:subject3>  <info:predicate3> \"Shalom!\"@he))");
+    private static final Model jenaModel = createModelForGraph(jenaGraph);
+    private static final List<Triple> triples = jenaGraph.find(ANY).mapWith(tripleUnconverter::convert).toList();
 }
