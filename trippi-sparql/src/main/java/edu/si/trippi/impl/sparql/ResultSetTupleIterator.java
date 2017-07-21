@@ -33,13 +33,15 @@ import static edu.si.trippi.impl.sparql.converters.LiteralConverter.literalConve
 import static edu.si.trippi.impl.sparql.converters.UriConverter.uriConverter;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.jena.atlas.iterator.Iter.asStream;
+import static org.apache.jena.query.Query.QueryTypeAsk;
+import static org.apache.jena.query.Query.QueryTypeSelect;
 
 import java.util.List;
 import java.util.Map;
-
 import org.apache.jena.graph.Node_Blank;
 import org.apache.jena.graph.Node_Literal;
 import org.apache.jena.graph.Node_URI;
+import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.RDFNode;
@@ -53,6 +55,7 @@ import org.trippi.TupleIterator;
  */
 public class ResultSetTupleIterator extends TupleIterator {
 
+    private final QueryExecution q;
     private final ResultSet results;
 
     /**
@@ -60,9 +63,21 @@ public class ResultSetTupleIterator extends TupleIterator {
      *
      * @param r the {@code ResultSet} to wrap
      */
-    public ResultSetTupleIterator(final ResultSet r) {
-        this.results = r;
+    public ResultSetTupleIterator(final QueryExecution q) {
+        this.q = q;
+        this.results = retrieveResults(q);
     }
+
+    protected static final ResultSet retrieveResults(QueryExecution q) {
+        switch (q.getQuery().getQueryType()) {
+        case QueryTypeSelect:
+            return q.execSelect();
+        case QueryTypeAsk:
+            return new AskResultSet(q.execAsk());
+        default:
+            throw new IllegalArgumentException("Tuple service called with query type other than SELECT or ASK!");
+        }
+    };
 
     @Override
     public boolean hasNext() {
@@ -88,5 +103,5 @@ public class ResultSetTupleIterator extends TupleIterator {
     }
 
     @Override
-    public void close() {/* NO OP */}
+    public void close() { q.close(); }
 }

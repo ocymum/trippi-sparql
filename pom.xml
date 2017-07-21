@@ -42,7 +42,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <fedora.version>3.8.1</fedora.version>
-        <fuseki.version>2.3.1</fuseki.version>
+        <fuseki.version>2.6.0</fuseki.version>
         <jena.version>3.1.0</jena.version>
     </properties>
 
@@ -51,7 +51,9 @@
             <id>ajs6f</id>
             <name>A. Soroka</name>
             <timezone>America/Kentucky/Louisville</timezone>
-            <url>http://www.asoroka.com</url>
+            <email>sorokaa at si dot edu</email>
+            <organization>Smithsonian Institution</organization>
+            <organizationUrl>http://si.edu</organizationUrl>
             <roles>
                 <role>Originator</role>
             </roles>
@@ -76,20 +78,6 @@
         <url>scm:git:git://github.com/Smithsonian/trippi-sparql.git</url>
       <tag>HEAD</tag>
     </scm>
-    
-    <repositories>
-      <repository>
-        <id>Duraspace</id>
-        <name>Duraspace-maintained cache of Central</name>
-        <url>https://m2.duraspace.org/content/repositories/central</url>
-        <releases>
-          <enabled>true</enabled>
-        </releases>
-        <snapshots>
-          <enabled>false</enabled>
-        </snapshots>
-      </repository>
-    </repositories>
 
     <dependencyManagement>
         <dependencies>
@@ -108,12 +96,6 @@
             </dependency>
 
             <dependency>
-                <groupId>com.google.collections</groupId>
-                <artifactId>google-collections</artifactId>
-                <version>1.0</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.apache.jena</groupId>
                 <artifactId>jena-arq</artifactId>
                 <version>${jena.version}</version>
@@ -125,6 +107,7 @@
                 <version>1.7.23</version>
             </dependency>
 
+            <!-- test gear -->
             <dependency>
               <groupId>org.apache.jena</groupId>
               <artifactId>jena-fuseki-war</artifactId>
@@ -132,25 +115,29 @@
               <type>war</type>
               <scope>test</scope>
             </dependency>
+
+            <dependency>
+              <groupId>org.mockito</groupId>
+              <artifactId>mockito-core</artifactId>
+              <version>2.7.12</version>
+              <scope>test</scope>
+            </dependency>
+            
+            <dependency>
+              <groupId>junit</groupId>
+              <artifactId>junit</artifactId>
+              <version>4.12</version>
+              <scope>test</scope>
+            </dependency>
+          
+            <dependency>
+              <groupId>ch.qos.logback</groupId>
+              <artifactId>logback-classic</artifactId>
+              <version>1.2.3</version>
+              <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <dependencies>
-		<!-- test -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.2.1</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
 
 	<build>
         <pluginManagement>
@@ -167,7 +154,7 @@
                 </plugin>
                 <plugin>
                   <artifactId>maven-surefire-plugin</artifactId>
-                  <version>2.19.1</version>
+                  <version>2.20</version>
                   <configuration>
                     <parallel>methods</parallel>
                     <threadCount>4</threadCount>
@@ -175,25 +162,25 @@
                 </plugin>
                 <plugin>
                   <artifactId>maven-failsafe-plugin</artifactId>
-                  <version>2.19.1</version>
+                  <version>2.20</version>
                 </plugin>
                 <plugin>
                   <groupId>org.codehaus.mojo</groupId>
                   <artifactId>build-helper-maven-plugin</artifactId>
-                  <version>1.12</version>
+                  <version>3.0.0</version>
                 </plugin>
                 <plugin>
                   <groupId>org.codehaus.cargo</groupId>
                   <artifactId>cargo-maven2-plugin</artifactId>
-                  <version>1.6.0</version>
+                  <version>1.6.3</version>
                 </plugin>
                 <plugin>
                   <artifactId>maven-shade-plugin</artifactId>
-                  <version>2.4.3</version>
+                  <version>3.0.0</version>
                 </plugin>
                 <plugin>
                   <artifactId>maven-war-plugin</artifactId>
-                  <version>3.0.0</version>
+                  <version>3.1.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -201,7 +188,7 @@
         <plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.5.1</version>
+				<version>3.6.1</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
@@ -210,12 +197,12 @@
             <plugin>
               <groupId>org.codehaus.mojo</groupId>
               <artifactId>versions-maven-plugin</artifactId>
-              <version>2.3</version>
+              <version>2.4</version>
             </plugin>
             <plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.7.201606060606</version>
+				<version>0.7.9</version>
 				<executions>
 					<execution>
 						<id>default-prepare-agent</id>
@@ -251,7 +238,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
+                <version>1.6.8</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
