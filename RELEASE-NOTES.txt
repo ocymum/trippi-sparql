@@ -1,0 +1,66 @@
+Trippi-SPARQL 1.0
+Release Date: 9 January 2017
+
+Additional Information may be found at:
+
+- https://confluence.si.edu/display/RISSC/Trippi-SPARQL+1.0+Release+Notes
+- https://github.com/Smithsonian/trippi-sparql
+
+Team
+
+Developers and Contributors
+
+A. Soroka
+Davis, Daniel
+Jared Whiklo, University of Manitoba
+
+Special Thanks to our Early Adopters
+
+Nick Ruest, York University
+Andy Wagner, University of Toronto
+Jared Whiklo, University of Manitoba
+John Yobb, University of Saskatchewan
+
+Summary
+
+Trippi-SPARQL 1.0 is the first release that incorporates all of the issues surfaced by the early adopters of this
+utility in production environments.  It achieves several major objectives:
+
+- To be a drop-in replacement for the Mulgara Trippi implementation for Fedora 3
+- Fully support SPARQL 1.1 tested with multiple triplestores
+- Support RISearch
+- Enable full use of a triplestore independently of the Fedora Repository API while preserving the legacy APIs
+- Provide means to gradually update to Fedora 4
+
+Trippi-SPARQL is formally tested only with Fuseki and Jena. However, our early adopters are using other SPARQL 1.1
+compliant triplestores successfully, specifically BlazeGraph. Additionally, we test only with Fedora 3.8.1 using
+Java 8.
+
+Changes
+
+Support Fedora's Default Aliases
+
+A number of Fedora applications have been written to use a set of default, "convenience" namespace prefixes that are
+provided by Fedora. Behind the scenes, Fedora rewrites those prefixes into canonical forms. For example, Islandora
+assumes that those prefixes can be used in its code. The previous version of Trippi-SPARQL did not supply those
+conveniences for queries not made through Fedora. This put the burden on client software to handle the default
+namespace prefixes when not using Fedora's APIs and querying triplestores directly. In Islandora's case, a Tuque fork
+was created to rewrite the default namespaces. By adding support in Trippi-SPARQL for Fedora's prefix rewriting,
+client software using Fedora-specific namespaces and Fedora APIs should now "just work" without modification
+permitting "drop-in" replacement of Fedora's APIs with queries made directly to the triplestore of your choice.
+
+As we transition to Fedora 4, we feel it is best to rewrite client software to avoid assuming on such conveniences.
+This version of Trippi-SPARQL makes this an incremental process. Clients can continue to use Fedora APIs including
+RISearch, or use Fuseki or any other SPARQL 1.1 triplestore directly, (or both), and clients (including Islandora)
+that work with Fedora's APIs should work immediately without change.
+
+Parameterize URI base for graph name
+
+Allows the base used to resolve any relative graph names to be configured.
+
+Housekeeping and Bugs
+
+- Improved README
+- Improved POM
+- Fixing bug in URI base configuration management
+- Allow configuration of triplestore connection pool size
