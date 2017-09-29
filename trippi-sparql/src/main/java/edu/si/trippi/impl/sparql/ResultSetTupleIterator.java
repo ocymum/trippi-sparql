@@ -77,7 +77,7 @@ public class ResultSetTupleIterator extends TupleIterator {
         default:
             throw new IllegalArgumentException("Tuple service called with query type other than SELECT or ASK!");
         }
-    };
+    }
 
     @Override
     public boolean hasNext() {

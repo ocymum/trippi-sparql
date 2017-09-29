@@ -68,8 +68,6 @@ import org.trippi.impl.base.DefaultAliasManager;
 import org.trippi.impl.base.TriplestoreSession;
 import org.trippi.io.SimpleTripleIterator;
 
-import edu.si.trippi.impl.sparql.converters.TripleConverter;
-
 /**
  * A {@link TriplestoreSession} implementation using SPARQL Query and Update for all operations.
  *
@@ -141,7 +139,7 @@ public class SparqlSession implements TriplestoreSession {
     /**
      * The various operations that can be performed against a triplestore via SPARQL Update.
      */
-    public static enum Operation { INSERT, DELETE }
+    public enum Operation { INSERT, DELETE }
 
     @Override
     public String[] listTupleLanguages() {
